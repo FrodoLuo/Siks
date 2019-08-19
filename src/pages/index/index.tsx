@@ -1,17 +1,18 @@
-import { ComponentType } from 'react'
-import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Button, Text } from '@tarojs/components'
-import { observer, inject } from '@tarojs/mobx'
+import { Button, Text, View } from '@tarojs/components';
+import { inject, observer } from '@tarojs/mobx';
+import Taro, { Component, Config } from '@tarojs/taro';
+import { ComponentType } from 'react';
 
-import './index.less'
+import { get } from '../../utils/request';
+import './index.less';
 
-type PageStateProps = {
+interface PageStateProps {
   counterStore: {
     counter: number,
     increment: Function,
     decrement: Function,
-    incrementAsync: Function
-  }
+    incrementAsync: Function,
+  };
 }
 
 interface Index {
@@ -29,41 +30,47 @@ class Index extends Component {
    * 对于像 navigationBarTextStyle: 'black' 这样的推导出的类型是 string
    * 提示和声明 navigationBarTextStyle: 'black' | 'white' 类型冲突, 需要显示声明类型
    */
-  config: Config = {
-    navigationBarTitleText: '首页'
+  public config: Config = {
+    navigationBarTitleText: '首页',
+  };
+
+  public componentWillMount() { }
+
+  public componentWillReact() {
+    console.log('componentWillReact');
+    
   }
 
-  componentWillMount () { }
-
-  componentWillReact () {
-    console.log('componentWillReact')
+  public componentDidMount() {
+    get('http://content.frodoluo.ink/articles')
+      .then(res => {
+        console.log(res);
+      });
   }
 
-  componentDidMount () { }
+  public componentWillUnmount() { }
 
-  componentWillUnmount () { }
+  public componentDidShow() { }
 
-  componentDidShow () { }
+  public componentDidHide() { }
 
-  componentDidHide () { }
-
-  increment = () => {
-    const { counterStore } = this.props
-    counterStore.increment()
+  public increment = () => {
+    const { counterStore } = this.props;
+    counterStore.increment();
   }
 
-  decrement = () => {
-    const { counterStore } = this.props
-    counterStore.decrement()
+  public decrement = () => {
+    const { counterStore } = this.props;
+    counterStore.decrement();
   }
 
-  incrementAsync = () => {
-    const { counterStore } = this.props
-    counterStore.incrementAsync()
+  public incrementAsync = () => {
+    const { counterStore } = this.props;
+    counterStore.incrementAsync();
   }
 
-  render () {
-    const { counterStore: { counter } } = this.props
+  public render() {
+    const { counterStore: { counter } } = this.props;
     return (
       <View className='index'>
         <Button onClick={this.increment}>+</Button>
@@ -71,8 +78,8 @@ class Index extends Component {
         <Button onClick={this.incrementAsync}>Add Async</Button>
         <Text>{counter}</Text>
       </View>
-    )
+    );
   }
 }
 
-export default Index  as ComponentType
+export default Index  as ComponentType;
