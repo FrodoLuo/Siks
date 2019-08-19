@@ -38,7 +38,6 @@ class Index extends Component {
 
   public componentWillReact() {
     console.log('componentWillReact');
-    
   }
 
   public componentDidMount() {
