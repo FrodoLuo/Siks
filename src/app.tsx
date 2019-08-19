@@ -37,20 +37,21 @@ class App extends Component {
     },
   };
 
-  public componentDidMount () {
-    const a =c => c * 2;
+  public componentDidMount() {
+    const a = c => c * 2;
+    const b= [1, 2, 3, 4, 5];
   }
 
-  public componentDidShow () { }
+  public componentDidShow() { }
 
-  public componentDidHide () {
+  public componentDidHide() {
   }
 
-  public componentDidCatchError () { }
+  public componentDidCatchError() { }
 
   // 在 App 类中的 render() 函数没有实际作用
   // 请勿修改此函数
-  public render () {
+  public render() {
     return (
       <Provider store={store}>
         <Index />

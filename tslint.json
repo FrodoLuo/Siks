@@ -23,13 +23,13 @@
         "prefer-object-spread": true,
         "quotemark": [true, "single"],
         "only-arrow-functions": [true, "allow-named-functions"],
-        "space-before-function-paren":true,
         "triple-equals": true,
         "whitespace": {
             "options": [
                 "check-branch",
                 "check-operator",
-                "check-preblock"
+                "check-preblock",
+                "check-separator"
             ]
         }
     },
