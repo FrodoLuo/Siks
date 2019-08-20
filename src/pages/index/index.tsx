@@ -67,28 +67,28 @@ class Index extends Component {
   }
 
   public handleNav = event => {
-    this.setState({current: event});
+    this.setState({ current: event });
   }
 
   public render() {
     const { counterStore: { counter } } = this.props;
     return (
       <View className='index'>
-      <AtTabBar
+        <AtTabBar
           fixed={true}
           current={this.state.current}
           tabList={[
-            {title: '首页', iconType: 'home'},
-            {title: '发布', iconType: 'add'},
-            {title: '我的', iconType: 'user'},
+            { title: '首页', iconType: 'home' },
+            { title: '发布', iconType: 'add' },
+            { title: '我的', iconType: 'user' },
           ]}
           onClick={this.handleNav}
         >
         </AtTabBar>
         {
           this.state.current === 0
-          ? <View><HallPage /></View>
-          : null
+            ? <View className="page-content"><HallPage /></View>
+            : null
         }
 
       </View>
@@ -96,4 +96,4 @@ class Index extends Component {
   }
 }
 
-export default Index  as ComponentType;
+export default Index as ComponentType;

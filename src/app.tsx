@@ -1,10 +1,10 @@
 import { Provider } from '@tarojs/mobx';
 import Taro, { Component, Config } from '@tarojs/taro';
 import 'taro-ui/dist/style/index.scss';
+import './app.less';
 import Index from './pages/index';
 import counterStore from './store/counter';
-
-import './app.less';
+import questStore from './store/quest';
 
 // 如果需要在 h5 环境中开启 React Devtools
 // 取消以下注释：
@@ -14,6 +14,7 @@ import './app.less';
 
 const store = {
   counterStore,
+  questStore,
 };
 
 class App extends Component {
@@ -39,7 +40,7 @@ class App extends Component {
 
   public componentDidMount() {
     const a = c => c * 2;
-    const b= [1, 2, 3, 4, 5];
+    const b = [1, 2, 3, 4, 5];
   }
 
   public componentDidShow() { }
