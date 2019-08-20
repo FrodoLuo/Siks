@@ -36,15 +36,9 @@ class Index extends Component {
     navigationBarTitleText: '大厅',
   };
 
-  // public tabList = [
-  //   <HallPage></HallPage>,
-  // ];
-
   public state = {
     current: 0,
   };
-
-
 
   public componentWillMount() { }
 
@@ -73,17 +67,16 @@ class Index extends Component {
   }
 
   public handleNav = event => {
-    console.log(event);
+    this.setState({current: event});
   }
 
   public render() {
     const { counterStore: { counter } } = this.props;
     return (
       <View className='index'>
-        <HallPage></HallPage>
-        <AtTabBar
+      <AtTabBar
           fixed={true}
-          current={0}
+          current={this.state.current}
           tabList={[
             {title: '首页', iconType: 'home'},
             {title: '发布', iconType: 'add'},
@@ -92,6 +85,12 @@ class Index extends Component {
           onClick={this.handleNav}
         >
         </AtTabBar>
+        {
+          this.state.current === 0
+          ? <View><HallPage /></View>
+          : null
+        }
+
       </View>
     );
   }
