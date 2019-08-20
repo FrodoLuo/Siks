@@ -2,9 +2,11 @@ import { Button, Text, View } from '@tarojs/components';
 import { inject, observer } from '@tarojs/mobx';
 import Taro, { Component, Config } from '@tarojs/taro';
 import { ComponentType } from 'react';
+import { AtTabBar } from 'taro-ui';
 
 import { get } from '../../utils/request';
 import './index.less';
+import HallPage from './subpages/hall';
 
 interface PageStateProps {
   counterStore: {
@@ -31,20 +33,22 @@ class Index extends Component {
    * 提示和声明 navigationBarTextStyle: 'black' | 'white' 类型冲突, 需要显示声明类型
    */
   public config: Config = {
-    navigationBarTitleText: '首页',
+    navigationBarTitleText: '大厅',
   };
+
+  // public tabList = [
+  //   <HallPage></HallPage>,
+  // ];
+
+  public state = {
+    current: 0,
+  };
+
+
 
   public componentWillMount() { }
 
-  public componentWillReact() {
-    console.log('componentWillReact');
-  }
-
   public componentDidMount() {
-    get('http://content.frodoluo.ink/articles')
-      .then(res => {
-        console.log(res);
-      });
   }
 
   public componentWillUnmount() { }
@@ -68,14 +72,26 @@ class Index extends Component {
     counterStore.incrementAsync();
   }
 
+  public handleNav = event => {
+    console.log(event);
+  }
+
   public render() {
     const { counterStore: { counter } } = this.props;
     return (
       <View className='index'>
-        <Button onClick={this.increment}>+</Button>
-        <Button onClick={this.decrement}>-</Button>
-        <Button onClick={this.incrementAsync}>Add Async</Button>
-        <Text>{counter}</Text>
+        <HallPage></HallPage>
+        <AtTabBar
+          fixed={true}
+          current={0}
+          tabList={[
+            {title: '首页', iconType: 'home'},
+            {title: '发布', iconType: 'add'},
+            {title: '我的', iconType: 'user'},
+          ]}
+          onClick={this.handleNav}
+        >
+        </AtTabBar>
       </View>
     );
   }

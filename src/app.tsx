@@ -1,7 +1,7 @@
 import { Provider } from '@tarojs/mobx';
 import Taro, { Component, Config } from '@tarojs/taro';
+import 'taro-ui/dist/style/index.scss';
 import Index from './pages/index';
-
 import counterStore from './store/counter';
 
 import './app.less';
