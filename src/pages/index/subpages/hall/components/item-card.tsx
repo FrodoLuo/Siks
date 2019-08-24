@@ -1,26 +1,27 @@
 import { Image, View } from '@tarojs/components';
+import { Quest } from 'src/store/quest';
 import { AtCard } from 'taro-ui';
 import './item-card.less';
 
-export default ({ amount, title, description, date, area, cover }) => {
+export default ({ quest }: { quest: Quest }) => {
   return (
     <AtCard
-      note={area}
-      title={title}
+      note={quest.school}
+      title={quest.title}
     >
       <View className="siks">
         <View className="content">
-          {cover ? (<View className="cover-wraper"><Image src={cover} /></View>) : null}
+          {quest.cover ? (<View className="cover-wraper"><Image src={quest.cover} /></View>) : null}
           <View className="descriptions">
-            {description}
+            {quest.content}
           </View>
         </View>
         <View className="footer">
           <View className="date">
-            {date}
+            {quest.publishedTime}
           </View>
           <View className="amount">
-            ￥{amount}
+            ￥{quest.gold}
           </View>
         </View>
       </View>

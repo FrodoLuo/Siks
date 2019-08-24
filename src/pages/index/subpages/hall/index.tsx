@@ -1,18 +1,17 @@
 import { View } from '@tarojs/components';
 import { inject, observer } from '@tarojs/mobx';
 import Taro from '@tarojs/taro';
-import { Quest } from 'src/store/quest';
+import QuestStore, { Quest } from 'src/store/quest';
 import ItemCard from './components/item-card';
 import './index.less';
 
 interface PageStateProps {
-  questStore: {
-    quests: Quest[],
-    getQuests: Function,
-  };
+  questStore: QuestStore;
 }
 
-@inject('questStore')
+@inject(store => ({
+  questStore: store.questStore,
+}))
 @observer
 class HallPage extends Taro.Component<PageStateProps> {
 
@@ -24,12 +23,11 @@ class HallPage extends Taro.Component<PageStateProps> {
   }
 
   public renderItems(items: Quest[]) {
-    console.log(items);
     return items.map(
       item => {
         return (
           <View className="card-wrap">
-            <ItemCard {...item} />
+            <ItemCard quest={item} />
           </View>
         );
       },

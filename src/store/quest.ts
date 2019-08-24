@@ -1,54 +1,54 @@
-import { observable } from 'mobx';
+import { action, observable } from 'mobx';
+import { cloud } from '../utils/request';
 
-const questStore = observable({
-  quests: [],
-  getQuests() {
-    return Promise.resolve(questMock)
-      .then(res => {
+export default class QuestStore {
+  @observable public quests: Quest[] = [];
+
+  @action public getQuests(start = 0, num = 10) {
+    // Promise.resolve(questMock)
+    //   .then(res => {
+    //     this.quests = res;
+    //   });
+    cloud<Quest[]>({
+      name: 'getTaskList',
+      data: {
+        num,
+        start,
+      },
+    }).then(
+      res => {
         this.quests = res;
+      },
+    );
+  }
+
+  public publish(quest: Quest) {
+    cloud({
+      name: 'addDbTask',
+      data: quest,
+    })
+      .then(res => {
+        console.log(res);
       });
-  },
-});
+  }
+
+  public sum(a: number, b: number) {
+    cloud({
+      name: 'sum',
+      data: {
+        a, b,
+      },
+    });
+  }
+}
 
 export interface Quest {
   title: string;
-  amount: number;
-  date: string;
-  description: string;
-  area: string;
-  cover: string | null;
+  gold: number;
+  content: string;
+  cover?: string | null;
+  publishedTime?: string;
+  close_time?: string;
+  consumed_num?: number;
+  school: string;
 }
-
-const questMock: Quest[] = [
-  {
-    title: '寻找北门看见的穿白色上衣女生',
-    amount: 100,
-    date: '2019/08/22',
-    description: '大约在今天(周五)上午在北门看见的一个穿着白色上衣的女生',
-    area: '南京大学',
-    cover: null,
-  }, {
-    title: '寻找北门看见的穿白色上衣女生',
-    amount: 100,
-    date: '2019/08/22',
-    description: '大约在今天(周五)上午在北门看见的一个穿着白色上衣的女生',
-    area: '南京大学',
-    cover: null,
-  }, {
-    title: '寻找北门看见的穿白色上衣女生',
-    amount: 100,
-    date: '2019/08/22',
-    description: '大约在今天(周五)上午在北门看见的一个穿着白色上衣的女生',
-    area: '南京大学',
-    cover: null,
-  }, {
-    title: '寻找北门看见的穿白色上衣女生',
-    amount: 100,
-    date: '2019/08/22',
-    description: '大约在今天(周五)上午在北门看见的一个穿着白色上衣的女生',
-    area: '南京大学',
-    cover: null,
-  },
-];
-
-export default questStore;

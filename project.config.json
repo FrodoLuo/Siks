@@ -2,7 +2,7 @@
 	"miniprogramRoot": "dist/",
 	"projectname": "Siks",
 	"description": "a wx app to help people find those once meet but don&#39;t know each others.",
-	"appid": "touristappid",
+	"appid": "wx0b414cd6ff08b974",
 	"setting": {
 		"urlCheck": true,
 		"es6": false,

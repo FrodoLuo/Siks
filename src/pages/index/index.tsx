@@ -2,26 +2,24 @@ import { Button, Text, View } from '@tarojs/components';
 import { inject, observer } from '@tarojs/mobx';
 import Taro, { Component, Config } from '@tarojs/taro';
 import { ComponentType } from 'react';
-import { AtTabBar } from 'taro-ui';
+import { AtButton, AtModal, AtTabBar } from 'taro-ui';
 
-import { get } from '../../utils/request';
+import AuthStatus from '../../store/auth';
 import './index.less';
 import HallPage from './subpages/hall';
+import PublishPage from './subpages/publish';
 
 interface PageStateProps {
-  counterStore: {
-    counter: number,
-    increment: Function,
-    decrement: Function,
-    incrementAsync: Function,
-  };
+  authStatus: AuthStatus;
 }
 
 interface Index {
   props: PageStateProps;
 }
 
-@inject('counterStore')
+@inject(store => ({
+  authStatus: store.authStatus,
+}))
 @observer
 class Index extends Component {
 
@@ -37,12 +35,19 @@ class Index extends Component {
   };
 
   public state = {
+    authorized: null,
     current: 0,
   };
 
   public componentWillMount() { }
 
   public componentDidMount() {
+    this.props.authStatus.getUserInfo()
+      .then(res => {
+        this.setState({
+          authorized: res,
+        });
+      });
   }
 
   public componentWillUnmount() { }
@@ -51,29 +56,34 @@ class Index extends Component {
 
   public componentDidHide() { }
 
-  public increment = () => {
-    const { counterStore } = this.props;
-    counterStore.increment();
-  }
-
-  public decrement = () => {
-    const { counterStore } = this.props;
-    counterStore.decrement();
-  }
-
-  public incrementAsync = () => {
-    const { counterStore } = this.props;
-    counterStore.incrementAsync();
-  }
-
   public handleNav = event => {
     this.setState({ current: event });
   }
 
+  public closeAuth = () => {
+    this.setState({
+      authorized: true,
+    });
+  }
+
   public render() {
-    const { counterStore: { counter } } = this.props;
     return (
-      <View className='index'>
+      <View className="index">
+        {this.state.authorized === false
+          ? (
+            <AtModal isOpened closeOnClickOverlay={false}>
+              <View>登录小程序, 加入六度寻人</View>
+              <AtButton
+                openType="getUserInfo"
+                type="primary"
+                onGetUserInfo={this.closeAuth}
+              >
+                登录
+              </AtButton>
+            </AtModal>
+          )
+          : null
+        }
         <AtTabBar
           fixed={true}
           current={this.state.current}
@@ -89,8 +99,11 @@ class Index extends Component {
           this.state.current === 0
             ? <View className="page-content"><HallPage /></View>
             : null
+        }{
+          this.state.current === 1
+            ? <View className="page-content"><PublishPage /></View>
+            : null
         }
-
       </View>
     );
   }
