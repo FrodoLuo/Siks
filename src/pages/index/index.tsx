@@ -61,6 +61,7 @@ class Index extends Component {
   }
 
   public closeAuth = () => {
+    this.props.authStatus.getUserInfo(true);
     this.setState({
       authorized: true,
     });

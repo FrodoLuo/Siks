@@ -6,34 +6,25 @@ export default class AuthStatus {
 
   @observable public userInfo: Taro.getUserInfo.PromisedPropUserInfo | null = null;
 
-  @action public async getUserInfo(): Promise<boolean> {
+  @action public async getUserInfo(first = false): Promise<boolean> {
     try {
       const result = await Taro.getUserInfo();
       this.userInfo = result.userInfo;
+      if (first) {
+        this.uploadInfo();
+      }
       return true;
     } catch (err) {
       return false;
     }
   }
 
-  public uploadAvatar(url: string) {
+  public uploadInfo() {
     cloud({
-      name: '',
+      name: 'addUserinfo',
       data: {
-        url,
+        ...this.userInfo,
       },
     });
   }
-
-  @action
-  public async checkAuth(): Promise<boolean> {
-    try {
-      await Taro.authorize({ scope: 'scope.userInfo' });
-      this.getUserInfo();
-      return true;
-    } catch (err) {
-      return false;
-    }
-  }
-
 }
