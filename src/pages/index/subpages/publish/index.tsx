@@ -1,37 +1,44 @@
-import { Button, Form, Input, Label, View } from '@tarojs/components';
+import { Button, Form, Image, Input, Label, View } from '@tarojs/components';
 import { inject, observer } from '@tarojs/mobx';
 import Taro from '@tarojs/taro';
-import QuestStore from 'src/store/quest';
-import { AtButton, AtForm, AtInput } from 'taro-ui';
+import { AtButton, AtForm, AtImagePicker, AtInput } from 'taro-ui';
+import PublishController, { PUBLISH_STAGE } from '../../../../store/publish';
 
 interface PublishPageProps {
-  questStore: QuestStore;
+  publishController: PublishController;
 }
 
+interface PublishPageState {
+  files: File[];
+  currentStage: PUBLISH_STAGE;
+}
 @inject(store => ({
-  questStore: store.questStore,
+  publishController: store.publishController,
 }))
 @observer
 class PublishPage extends Taro.Component<PublishPageProps> {
 
   public static defaultProps: PublishPageProps;
 
-  public addQuest = () => {
-    this.props.questStore.publish({
-      title: '找另一个人',
-      gold: 14,
-      content: '找一个男生',
-      school: '深圳大学',
+  public submit = event => {
+  }
+
+  public nextStage = () => {
+    const t = this.props.publishController.currentStage === PUBLISH_STAGE.CONTENT_AND_IMG
+      ? PUBLISH_STAGE.DETAILING
+      : PUBLISH_STAGE.CONTENT_AND_IMG;
+    this.props.publishController.update('currentStage', t);
+  }
+
+  public handleFiles = files => {
+    this.setState({
+      files,
     });
   }
 
-  public submit = event => {
-    this.props.questStore.publish(event.detail.value);
-  }
-
   public render() {
+    const { publishController } = this.props;
     return <View>
-      <Button onClick={this.addQuest}>Add</Button>
       <Form onSubmit={this.submit}>
         <View className="form-item">
           <Label>标题</Label>
@@ -42,15 +49,30 @@ class PublishPage extends Taro.Component<PublishPageProps> {
           <Input name="content"></Input>
         </View>
         <View className="form-item">
-          <Label>赏金</Label>
-          <Input name="gold"></Input>
-        </View>
-        <View className="form-item">
-          <Label>学校</Label>
-          <Input name="school"></Input>
+          <View className="upload-btn">
+            <Label>上传图片(可选)</Label>
+            {
+              this.props.publishController.currentStage === PUBLISH_STAGE.CONTENT_AND_IMG
+                ? (<AtImagePicker
+                  multiple={false}
+                  showAddBtn={publishController.files.length < 1}
+                  length={1}
+                  files={publishController.files}
+                  onChange={this.handleFiles}
+                />)
+                : publishController.files.length > 0
+                  ? <Image mode="aspectFill" src={publishController.files[0].url} />
+                  : null
+            }
+          </View>
         </View>
         <View className="btn-wrap">
-          <Button formType="submit">发布</Button>
+          <Button onClick={this.nextStage}>
+            {this.props.publishController.currentStage === PUBLISH_STAGE.CONTENT_AND_IMG ? '下一步' : '上一步'}
+          </Button>
+          {this.props.publishController.currentStage === PUBLISH_STAGE.DETAILING
+            ? <Button formType="submit">发布</Button>
+            : null}
         </View>
       </Form>
     </View>;
