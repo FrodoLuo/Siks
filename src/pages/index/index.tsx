@@ -36,7 +36,7 @@ class Index extends Component {
 
   public state = {
     authorized: null,
-    current: 1,
+    current: 0,
   };
 
   public componentWillMount() { }

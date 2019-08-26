@@ -1,8 +1,10 @@
-import { Button, Form, Image, Input, Label, View } from '@tarojs/components';
+import { Button, Form, Image, Input, Label, Picker, PickerView, View } from '@tarojs/components';
 import { inject, observer } from '@tarojs/mobx';
 import Taro from '@tarojs/taro';
-import { AtButton, AtForm, AtImagePicker, AtInput } from 'taro-ui';
-import PublishController, { PUBLISH_STAGE } from '../../../../store/publish';
+import { AtButton, AtForm, AtImagePicker, AtInput, AtSwitch, AtTextarea, AtModal } from 'taro-ui';
+import PublishController, { expires, PUBLISH_STAGE, schools } from '../../../../store/publish';
+
+import './index.less';
 
 interface PublishPageProps {
   publishController: PublishController;
@@ -21,6 +23,8 @@ class PublishPage extends Taro.Component<PublishPageProps> {
   public static defaultProps: PublishPageProps;
 
   public submit = event => {
+    this.props.publishController.publish()
+      .then(() => { }, () => { });
   }
 
   public nextStage = () => {
@@ -38,44 +42,238 @@ class PublishPage extends Taro.Component<PublishPageProps> {
 
   public render() {
     const { publishController } = this.props;
-    return <View>
-      <Form onSubmit={this.submit}>
+    console.log(publishController);
+    return (
+      <View className="page-content">
+        {
+          publishController.currentStage === PUBLISH_STAGE.FINISHED
+            ? (
+              <View>
+                <AtModal
+                  isOpened={true}
+                >
+                  <View>
+                    发布成功
+                  <View className="form-item">
+                      <AtButton openType="share">转发给其他人</AtButton>
+                    </View>
+                  </View>
+                </AtModal>
+              </View>
+            )
+            : null
+        }
+        {
+          publishController.currentStage !== PUBLISH_STAGE.CONTENT_AND_IMG
+            && publishController.currentStage !== PUBLISH_STAGE.FINISHED
+            ? (
+              <View>
+                <View className="title">
+                  {this.props.publishController.title}
+                </View>
+                <View className="content">
+                  {this.props.publishController.content}
+                </View>
+              </View>
+            )
+            : null
+        }
+        { // Stage 1 - 填写标题与上传图片
+          publishController.currentStage === PUBLISH_STAGE.CONTENT_AND_IMG
+            ? (
+              <View>
+                <View className="form-item">
+                  <AtInput
+                    title="标题"
+                    type="text"
+                    name="title"
+                    onChange={value => publishController.update('title', value)}
+                    value={publishController.title}
+                    placeholder="输入寻人标题"
+                  ></AtInput>
+                </View>
+                <View className="form-item">
+                  <AtTextarea
+                    onChange={value => publishController.update('content', value.detail.value)}
+                    value={publishController.content}
+                    placeholder="输入寻人描述"
+                  ></AtTextarea>
+                </View>
+              </View>
+            )
+            : null
+        }
         <View className="form-item">
-          <Label>标题</Label>
-          <Input name="title"></Input>
-        </View>
-        <View className="form-item">
-          <Label>内容</Label>
-          <Input name="content"></Input>
-        </View>
-        <View className="form-item">
-          <View className="upload-btn">
-            <Label>上传图片(可选)</Label>
-            {
-              this.props.publishController.currentStage === PUBLISH_STAGE.CONTENT_AND_IMG
-                ? (<AtImagePicker
-                  multiple={false}
-                  showAddBtn={publishController.files.length < 1}
-                  length={1}
-                  files={publishController.files}
-                  onChange={this.handleFiles}
-                />)
-                : publishController.files.length > 0
-                  ? <Image mode="aspectFill" src={publishController.files[0].url} />
-                  : null
+          <AtImagePicker
+            customStyle={{
+              pointerEvents: publishController.currentStage === PUBLISH_STAGE.CONTENT_AND_IMG ? 'all' : 'none',
+            }}
+            onChange={(files: any) => publishController.files = files}
+            files={publishController.files}
+            showAddBtn={
+              publishController.files.length === 0
+              && publishController.currentStage === PUBLISH_STAGE.CONTENT_AND_IMG
             }
-          </View>
+            length={1}
+          ></AtImagePicker>
         </View>
+        {
+          // Stage 2 - 填写位置, 赏金, 时限
+          publishController.currentStage === PUBLISH_STAGE.DETAILING
+            || publishController.currentStage === PUBLISH_STAGE.IDENTIFICATION
+            ? (
+              <View>
+                <View className="form-item">
+                  <Picker
+                    mode="selector"
+                    onChange={e => publishController.school = e.detail.value}
+                    value={publishController.school || -1}
+                    range={schools}
+                  >
+                    <View className="picker">
+                      <AtInput
+                        title="学校"
+                        name="school"
+                        onChange={() => { }}
+                        value={schools[publishController.school || -1] || ''}
+                      ></AtInput>
+                    </View>
+                  </Picker>
+                </View>
+                <View className="form-item">
+                  <AtInput
+                    value={publishController.gold || ''}
+                    title="赏金"
+                    name="gold"
+                    onChange={(v: any) => publishController.gold = Number.parseFloat(v)}
+                    type="number"
+                  ></AtInput>
+                </View>
+                <View className="form-item">
+                  <Picker
+                    mode="selector"
+                    value={publishController.expire || -1}
+                    onChange={v => publishController.expire = v.detail.value}
+                    range={expires}
+                  >
+                    <View>
+                      <AtInput
+                        value={expires[publishController.expire || -1]}
+                        title="有效期"
+                        name="expire"
+                        onChange={() => { }}
+                        type="number"
+                      ></AtInput>
+                    </View>
+                  </Picker>
+                </View>
+                <View className="form-item">
+                  <AtSwitch
+                    title="实名"
+                    checked={publishController.currentStage === PUBLISH_STAGE.IDENTIFICATION}
+                    onChange={value => {
+                      publishController.currentStage = value ? PUBLISH_STAGE.IDENTIFICATION : PUBLISH_STAGE.DETAILING;
+                    }
+                    }
+                  />
+                </View>
+
+              </View>
+            )
+            : null
+        }
+        {
+          // Stage 4 - 填写实名信息
+          publishController.currentStage === PUBLISH_STAGE.IDENTIFICATION
+            ? (
+              <View>
+                <View className="form-item">
+                  <AtInput
+                    title="姓名"
+                    value={publishController.name}
+                    onChange={(v: string) => publishController.name = v}
+                    name="name"
+                  ></AtInput>
+                </View>
+                <View className="form-item">
+                  <AtInput
+                    title="学校"
+                    value={publishController.school__}
+                    onChange={(v: string) => publishController.school__ = v}
+                    name="school__"
+                  ></AtInput>
+                </View>
+                <View className="form-item">
+                  <AtInput
+                    title="自我介绍"
+                    value={publishController.selfDescription}
+                    onChange={(v: string) => publishController.selfDescription = v}
+                    name="selfDescription"
+                  ></AtInput>
+                </View>
+              </View>
+            )
+            : null
+        }
         <View className="btn-wrap">
-          <Button onClick={this.nextStage}>
-            {this.props.publishController.currentStage === PUBLISH_STAGE.CONTENT_AND_IMG ? '下一步' : '上一步'}
-          </Button>
-          {this.props.publishController.currentStage === PUBLISH_STAGE.DETAILING
-            ? <Button formType="submit">发布</Button>
-            : null}
+          {
+            publishController.currentStage === PUBLISH_STAGE.DETAILING
+              || publishController.currentStage === PUBLISH_STAGE.IDENTIFICATION
+              ? (
+                <View className="form-item">
+                  <AtButton
+                    onClick={
+                      () => {
+                        publishController.update('currentStage', PUBLISH_STAGE.CONTENT_AND_IMG);
+                      }}
+                    disabled={
+                      !publishController.contentValid()
+                    }
+                  >
+                    上一步
+                  </AtButton>
+                </View>
+              )
+              : null
+          }
+          {
+            publishController.currentStage === PUBLISH_STAGE.CONTENT_AND_IMG
+              ? (
+                <View className="form-item">
+                  <AtButton
+                    onClick={
+                      () => {
+                        publishController.update('currentStage', PUBLISH_STAGE.DETAILING);
+                      }}
+                    disabled={
+                      !publishController.contentValid()
+                    }
+                  >
+                    下一步
+              </AtButton>
+                </View>
+              )
+              : null
+          }
+          {
+            (
+              this.props.publishController.currentStage === PUBLISH_STAGE.DETAILING
+              || this.props.publishController.currentStage === PUBLISH_STAGE.IDENTIFICATION
+            )
+              ? (
+                <View className="form-item">
+                  <AtButton
+                    disabled={!this.props.publishController.valid()}
+                    onClick={this.submit}
+                  >发布</AtButton>
+                </View>
+              )
+              : null
+          }
         </View>
-      </Form>
-    </View>;
+
+      </View>
+    );
   }
 }
 
