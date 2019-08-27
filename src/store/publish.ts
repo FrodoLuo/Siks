@@ -1,3 +1,4 @@
+import Taro, { cloud as nativeCloud } from '@tarojs/taro';
 import { action, observable } from 'mobx';
 
 export interface FileItem {
@@ -36,6 +37,7 @@ class PublishController {
   // Stage One 标题内容与图片
   @observable public title: string = '';
   @observable public content: string = '';
+  @observable public imageUrl: string = '';
   @observable public files: File[] = [];
 
   // Stage Two 地址赏金与时限
@@ -49,6 +51,8 @@ class PublishController {
   @observable public selfDescription: string = '';
 
   @observable public currentStage: PUBLISH_STAGE = PUBLISH_STAGE.CONTENT_AND_IMG;
+
+  @observable public onShareMessage: any = null;
 
   public getImage(): string {
     return this.files[0] ? this.files[0].url : '';
@@ -87,7 +91,7 @@ class PublishController {
     this.title = '';
     this.content = '';
     this.files = [];
-    this.school = '';
+    this.school = null;
     this.gold = null;
     this.expire = null;
     this.name = '';
@@ -96,6 +100,19 @@ class PublishController {
 
   @action public update(key, value) {
     this[key] = value;
+  }
+
+  @action public async uploadFiles(files: File[]) {
+    const file = files[0] || null;
+    if (!file) { return null; }
+    this.files = files;
+    const res = await nativeCloud.uploadFile({
+      cloudPath: `images/${Date.now()}.jpg`,
+      filePath: file.url,
+    });
+    console.log(res);
+    this.imageUrl = res.fileID;
+    return res;
   }
 
   @action public async publish(): Promise<number | false> {
@@ -110,7 +127,10 @@ class PublishController {
       selfDescription: this.selfDescription,
       title: this.title,
     };
-    console.log(data);
+    console.log(this.onShareMessage);
+    this.onShareMessage({
+      path: '/pages/test/index',
+    });
     this.currentStage = PUBLISH_STAGE.FINISHED;
     return false;
   }

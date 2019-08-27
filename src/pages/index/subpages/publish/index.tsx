@@ -34,10 +34,8 @@ class PublishPage extends Taro.Component<PublishPageProps> {
     this.props.publishController.update('currentStage', t);
   }
 
-  public handleFiles = files => {
-    this.setState({
-      files,
-    });
+  public handleFiles = async files => {
+    const res = await this.props.publishController.uploadFiles(files);
   }
 
   public render() {
@@ -108,8 +106,8 @@ class PublishPage extends Taro.Component<PublishPageProps> {
             customStyle={{
               pointerEvents: publishController.currentStage === PUBLISH_STAGE.CONTENT_AND_IMG ? 'all' : 'none',
             }}
-            onChange={(files: any) => publishController.files = files}
-            files={publishController.files}
+            onChange={this.handleFiles}
+            files={publishController.files || []}
             showAddBtn={
               publishController.files.length === 0
               && publishController.currentStage === PUBLISH_STAGE.CONTENT_AND_IMG
