@@ -8,6 +8,7 @@ import AuthStatus from '../../store/auth';
 import './index.less';
 import HallPage from './subpages/hall';
 import PublishPage from './subpages/publish';
+import PersonalPage from './subpages/personalPage'
 
 interface PageStateProps {
   authStatus: AuthStatus;
@@ -103,6 +104,10 @@ class Index extends Component {
         }{
           this.state.current === 1
             ? <View className="page-content"><PublishPage /></View>
+            : null
+        }{
+          this.state.current === 2
+            ? <View className="page-content"><PersonalPage/></View>
             : null
         }
       </View>
