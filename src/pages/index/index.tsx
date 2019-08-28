@@ -43,12 +43,7 @@ class Index extends Component {
   public componentWillMount() { }
 
   public componentDidMount() {
-    this.props.authStatus.getUserInfo()
-      .then(res => {
-        this.setState({
-          authorized: res,
-        });
-      });
+
   }
 
   public componentWillUnmount() { }
@@ -58,7 +53,21 @@ class Index extends Component {
   public componentDidHide() { }
 
   public handleNav = event => {
-    this.setState({ current: event });
+    if (event === 1 || event === 2) {
+      if (!this.props.authStatus.userInfo) {
+        this.props.authStatus.getUserInfo()
+          .then(res => {
+            this.setState({
+              authorized: res,
+              current: event,
+            });
+          });
+      } else {
+        this.setState({ current: event });
+      }
+    } else {
+      this.setState({ current: event });
+    }
   }
 
   public closeAuth = () => {

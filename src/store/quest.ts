@@ -4,6 +4,9 @@ import { cloud } from '../utils/request';
 export default class QuestStore {
   @observable public quests: Quest[] = [];
 
+  @observable public currentSort: number = 0;
+  @observable public currentSchool: number = 0;
+
   @action public getQuests(start = 0, num = 10) {
     // Promise.resolve(questMock)
     //   .then(res => {
