@@ -1,5 +1,6 @@
 import Taro, { cloud as nativeCloud } from '@tarojs/taro';
 import { action, observable } from 'mobx';
+import { cloud } from '../utils/request';
 
 export interface FileItem {
   path: string;
@@ -32,7 +33,7 @@ export const expires = [
   '14天',
   '30天',
 ];
-class PublishController {
+export class PublishController {
 
   // Stage One 标题内容与图片
   @observable public title: string = '';
@@ -127,13 +128,18 @@ class PublishController {
       selfDescription: this.selfDescription,
       title: this.title,
     };
-    console.log(this.onShareMessage);
-    this.onShareMessage({
-      path: '/pages/test/index',
+    const res = await cloud({
+      name: 'addDbTask',
+      data,
     });
+    if (res._id) {
+      Taro.navigateTo({
+        url: `/pages/quest-detail/index?id=${res._id}`,
+      });
+    }
     this.currentStage = PUBLISH_STAGE.FINISHED;
     return false;
   }
 }
 
-export default PublishController;
+export default new PublishController();

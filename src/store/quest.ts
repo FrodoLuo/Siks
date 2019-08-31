@@ -1,7 +1,8 @@
 import { action, observable } from 'mobx';
 import { cloud } from '../utils/request';
+import { UserInfo } from './auth';
 
-export default class QuestStore {
+export class QuestStore {
   @observable public quests: Quest[] = [];
 
   @observable public currentSort: number = 0;
@@ -20,19 +21,10 @@ export default class QuestStore {
       },
     }).then(
       res => {
+        console.log(res);
         this.quests = res;
       },
     );
-  }
-
-  public publish(quest: Quest) {
-    cloud({
-      name: 'addDbTask',
-      data: quest,
-    })
-      .then(res => {
-        console.log(res);
-      });
   }
 
   public sum(a: number, b: number) {
@@ -45,13 +37,17 @@ export default class QuestStore {
   }
 }
 
+export default new QuestStore();
+
 export interface Quest {
+  _id: string;
   title: string;
   gold: number;
   content: string;
   cover?: string | null;
-  publishedTime?: string;
+  published_time?: string;
   close_time?: string;
   consumed_num?: number;
   school: string;
+  user: UserInfo;
 }
