@@ -1,18 +1,19 @@
 import { Picker, View } from '@tarojs/components';
 import { inject, observer } from '@tarojs/mobx';
 import Taro from '@tarojs/taro';
-import QuestStore, { Quest } from 'src/store/quest';
+import { Quest, QuestStore } from 'src/store/quest';
+import school, { SchoolConfig } from 'src/store/school';
+import { AtIcon, AtLoadMore } from 'taro-ui';
 import ItemCard from './components/item-card';
 import './index.less';
-import { AtIcon } from 'taro-ui';
 
 interface PageStateProps {
   questStore: QuestStore;
+  schoolConfig: SchoolConfig;
 }
 
-@inject(store => ({
-  questStore: store.questStore,
-}))
+@inject('schoolConfig')
+@inject('questStore')
 @observer
 class HallPage extends Taro.Component<PageStateProps> {
 
@@ -20,14 +21,9 @@ class HallPage extends Taro.Component<PageStateProps> {
   public static defaultProps: PageStateProps;
 
   public sorts = [
-    '按热度',
     '按时间',
-  ];
-
-  public schools = [
-    '深圳大学',
-    '南方科技大学',
-    '南京大学',
+    '按热度',
+    '按赏金',
   ];
 
   public componentDidMount() {
@@ -46,24 +42,28 @@ class HallPage extends Taro.Component<PageStateProps> {
     );
   }
   public refreshList = () => {
-    this.props.questStore.getQuests();
+    this.props.questStore.refreshList();
   }
   public render() {
+    const schools = this.props.schoolConfig.schools;
+    const currentSchool = schools[this.props.questStore.currentSchool];
+    const t = currentSchool ? currentSchool.name : '';
     return (
       <View>
         <View className="filter-container">
           <View className="filters">
             <Picker
               mode="selector"
-              range={this.schools}
-              value={this.props.questStore.currentSort}
+              range={schools.map(item => item.name)}
+              value={this.props.questStore.currentSchool}
               onChange={e => {
-                this.props.questStore.currentSchool = e.detail.value;
+                console.log(6666123);
+                this.props.questStore.currentSchool = Number.parseInt(e.detail.value, 10);
                 this.refreshList();
               }}
             >
               <View className="school">
-                {this.schools[this.props.questStore.currentSchool]}
+                {t}
                 <AtIcon value="chevron-down"></AtIcon>
               </View>
             </Picker>
@@ -75,7 +75,7 @@ class HallPage extends Taro.Component<PageStateProps> {
               range={this.sorts}
               value={this.props.questStore.currentSort}
               onChange={e => {
-                this.props.questStore.currentSort = e.detail.value;
+                this.props.questStore.currentSort = Number.parseInt(e.detail.value, 10);
                 this.refreshList();
               }}
             >
@@ -89,6 +89,13 @@ class HallPage extends Taro.Component<PageStateProps> {
         <View className="quest-container">
           {this.renderItems(this.props.questStore.quests)}
         </View>
+        <AtLoadMore
+          loadingText="加载中"
+          noMoreText="已加载全部"
+          status={this.props.questStore.listStatus}
+          onClick={() => { this.props.questStore.getMore(); }}
+        >
+        </AtLoadMore>
       </View>
     );
   }

@@ -1,6 +1,10 @@
 import { View } from '@tarojs/components';
-import { Component } from '@tarojs/taro';
+import Taro, { Component } from '@tarojs/taro';
 import { AtButton } from 'taro-ui';
+
+const afterAction = () => {
+
+}
 
 const Initialized = ({ taskId }) => {
   const isMe = () => {

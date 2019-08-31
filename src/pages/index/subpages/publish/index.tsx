@@ -1,21 +1,20 @@
 import { Button, Form, Image, Input, Label, Picker, PickerView, View } from '@tarojs/components';
 import { inject, observer } from '@tarojs/mobx';
 import Taro from '@tarojs/taro';
-import { AtButton, AtForm, AtImagePicker, AtInput, AtSwitch, AtTextarea, AtModal } from 'taro-ui';
-import PublishController, { expires, PUBLISH_STAGE, schools } from '../../../../store/publish';
+import { AtButton, AtForm, AtImagePicker, AtInput, AtModal, AtSwitch, AtTextarea } from 'taro-ui';
+import { expires, PUBLISH_STAGE, PublishController } from '../../../../store/publish';
 
+import { SchoolConfig } from 'src/store/school';
 import './index.less';
 
 interface PublishPageProps {
   publishController: PublishController;
+  schoolConfig: SchoolConfig;
 }
 
-interface PublishPageState {
-  files: File[];
-  currentStage: PUBLISH_STAGE;
-}
 @inject(store => ({
   publishController: store.publishController,
+  schoolConfig: store.schoolConfig,
 }))
 @observer
 class PublishPage extends Taro.Component<PublishPageProps> {
@@ -23,7 +22,7 @@ class PublishPage extends Taro.Component<PublishPageProps> {
   public static defaultProps: PublishPageProps;
 
   public submit = event => {
-    console.log('publish')
+    console.log('publish');
     this.props.publishController.publish()
       .then(() => { }, () => { });
   }
@@ -41,7 +40,7 @@ class PublishPage extends Taro.Component<PublishPageProps> {
 
   public render() {
     const { publishController } = this.props;
-    console.log(publishController);
+    const schools = this.props.schoolConfig.schools;
     return (
       <View className="page-content">
         {
@@ -127,14 +126,17 @@ class PublishPage extends Taro.Component<PublishPageProps> {
                     mode="selector"
                     onChange={e => publishController.school = e.detail.value}
                     value={publishController.school || -1}
-                    range={schools}
+                    range={schools.map(item => item.name)}
                   >
                     <View className="picker">
                       <AtInput
                         title="学校"
                         name="school"
                         onChange={() => { }}
-                        value={schools[publishController.school || -1] || ''}
+                        value={schools[publishController.school]
+                          ? schools[publishController.school].name
+                          : ''
+                        }
                       ></AtInput>
                     </View>
                   </Picker>

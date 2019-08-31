@@ -1,7 +1,7 @@
 import Taro, { cloud as nativeCloud } from '@tarojs/taro';
 import { action, observable } from 'mobx';
 import { cloud } from '../utils/request';
-
+import schoolConfig from './school';
 export interface FileItem {
   path: string;
 
@@ -20,11 +20,6 @@ export enum PUBLISH_STAGE {
   IDENTIFICATION,
   FINISHED,
 }
-export const schools = [
-  '深圳大学',
-  '南方科技大学',
-  '南京大学',
-];
 
 export const expires = [
   '1天',
@@ -42,7 +37,7 @@ export class PublishController {
   @observable public files: File[] = [];
 
   // Stage Two 地址赏金与时限
-  @observable public school: number | null = null;
+  @observable public school: number = -1;
   @observable public gold: number | null = null;
   @observable public expire: number | null = null;
 
@@ -92,11 +87,12 @@ export class PublishController {
     this.title = '';
     this.content = '';
     this.files = [];
-    this.school = null;
+    this.school = -1;
     this.gold = null;
     this.expire = null;
     this.name = '';
     this.school__ = '';
+    this.currentStage = PUBLISH_STAGE.CONTENT_AND_IMG;
   }
 
   @action public update(key, value) {
@@ -123,7 +119,7 @@ export class PublishController {
       files: this.files,
       gold: this.gold,
       name: this.name,
-      school: this.school,
+      school: schoolConfig.schools[this.school]._id,
       school__: this.school__,
       selfDescription: this.selfDescription,
       title: this.title,
@@ -133,6 +129,7 @@ export class PublishController {
       data,
     });
     if (res._id) {
+      this.reset();
       Taro.navigateTo({
         url: `/pages/quest-detail/index?id=${res._id}`,
       });

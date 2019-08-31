@@ -3,12 +3,13 @@ import Taro from '@tarojs/taro';
 import { Quest } from 'src/store/quest';
 import { AtCard } from 'taro-ui';
 import './item-card.less';
+import schoolConfig from '../../../../../store/school';
 
 export default ({ quest }: { quest: Quest }) => {
   if (!quest) { return null; }
   return (
     <AtCard
-      note={quest.school}
+      note={(schoolConfig.schools.find(item => item._id === quest.school) || { name: '' }).name}
       title={quest.title}
       onClick={
         () => {
@@ -27,7 +28,7 @@ export default ({ quest }: { quest: Quest }) => {
         </View>
         <View className="footer">
           <View className="date">
-            {quest.publishedTime}
+            {new Date(quest.published_time || '').toLocaleString()}
           </View>
           <View className="amount">
             ￥{quest.gold}
