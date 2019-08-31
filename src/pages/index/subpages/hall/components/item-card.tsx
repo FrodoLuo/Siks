@@ -5,6 +5,7 @@ import { AtCard } from 'taro-ui';
 import './item-card.less';
 
 export default ({ quest }: { quest: Quest }) => {
+  if (!quest) { return null; }
   return (
     <AtCard
       note={quest.school}
