@@ -2,7 +2,7 @@ import Taro from '@tarojs/taro';
 import { action, observable } from 'mobx';
 import { cloud } from '../utils/request';
 
-export default class AuthStatus {
+export class AuthStatus {
 
   @observable public userInfo: Taro.getUserInfo.PromisedPropUserInfo | null = null;
 
@@ -10,6 +10,7 @@ export default class AuthStatus {
     try {
       const result = await Taro.getUserInfo();
       this.userInfo = result.userInfo;
+      console.log(this.userInfo);
       if (first) {
         this.uploadInfo();
       }
@@ -27,4 +28,13 @@ export default class AuthStatus {
       },
     });
   }
+}
+
+export default new AuthStatus();
+
+export interface UserInfo {
+  icon_url: string;
+  school: string;
+  sex: number;
+  nickname;
 }

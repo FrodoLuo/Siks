@@ -51,7 +51,7 @@ export const cloud = <T>(option: CloudOption) => {
   return Taro.cloud.callFunction(option)
     .then(
       res => {
-        return res.result.res.data;
+        return res.result;
       },
       error => {
         console.log(error);

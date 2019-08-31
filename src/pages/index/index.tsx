@@ -4,7 +4,7 @@ import Taro, { Component, Config } from '@tarojs/taro';
 import { ComponentType } from 'react';
 import { AtButton, AtModal, AtTabBar } from 'taro-ui';
 
-import AuthStatus from '../../store/auth';
+import { AuthStatus } from '../../store/auth';
 import './index.less';
 import HallPage from './subpages/hall';
 import PublishPage from './subpages/publish';
@@ -116,7 +116,7 @@ class Index extends Component {
             : null
         }{
           this.state.current === 2
-            ? <View className="page-content"><PersonalPage/></View>
+            ? <View className="page-content"><PersonalPage /></View>
             : null
         }
       </View>

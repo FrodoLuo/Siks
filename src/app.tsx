@@ -25,13 +25,13 @@ class App extends Component {
   public config: Config = {
     pages: [
       'pages/index/index',
-      'pages/im/index',
+      'pages/quest-detail/index',
     ],
     window: {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
-      navigationBarTitleText: 'WeChat',
       navigationBarTextStyle: 'black',
+      navigationBarTitleText: 'WeChat',
     },
   };
 

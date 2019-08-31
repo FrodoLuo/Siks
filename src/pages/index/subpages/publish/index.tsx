@@ -23,6 +23,7 @@ class PublishPage extends Taro.Component<PublishPageProps> {
   public static defaultProps: PublishPageProps;
 
   public submit = event => {
+    console.log('publish')
     this.props.publishController.publish()
       .then(() => { }, () => { });
   }

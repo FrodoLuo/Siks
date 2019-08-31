@@ -1,8 +1,7 @@
 import { Button, Form, Input, Label, View } from '@tarojs/components';
 import { inject, observer } from '@tarojs/mobx';
 import Taro from '@tarojs/taro';
-import QuestStore from 'src/store/quest';
-// import AuthStore from 'src/store/auth'
+import { QuestStore } from 'src/store/quest';
 import { AtAvatar } from 'taro-ui'
 import './index.less';
 

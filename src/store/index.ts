@@ -1,9 +1,11 @@
 import AuthStatus from './auth';
 import PublishController from './publish';
 import QuestStore from './quest';
+import QuestDetailStore from './questDetailStore';
 
 export default {
-  authStatus: new AuthStatus(),
-  publishController: new PublishController(),
-  questStore: new QuestStore(),
+  authStatus: AuthStatus,
+  publishController: PublishController,
+  questDetailStore: QuestDetailStore,
+  questStore: QuestStore,
 };
