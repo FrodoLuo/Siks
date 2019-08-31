@@ -6,6 +6,7 @@ export default class QuestStore {
 
   @observable public currentSort: number = 0;
   @observable public currentSchool: number = 0;
+  @observable public userInfo: any = {}
 
   @action public getQuests(start = 0, num = 10) {
     // Promise.resolve(questMock)
@@ -23,6 +24,17 @@ export default class QuestStore {
         this.quests = res;
       },
     );
+  }
+
+  @action public getUserInfo(){
+    cloud({
+      name: 'getuserinfo',
+    }).then(
+      res => {
+        console.log('res', res);
+        this.userInfo = res;
+      }
+    )
   }
 
   public publish(quest: Quest) {

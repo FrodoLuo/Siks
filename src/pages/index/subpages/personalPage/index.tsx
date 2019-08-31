@@ -2,27 +2,25 @@ import { Button, Form, Input, Label, View } from '@tarojs/components';
 import { inject, observer } from '@tarojs/mobx';
 import Taro from '@tarojs/taro';
 import QuestStore from 'src/store/quest';
-import AuthStore from 'src/store/auth'
+// import AuthStore from 'src/store/auth'
 import { AtAvatar } from 'taro-ui'
 import './index.less';
 
 interface PublishPageProps {
   questStore: QuestStore;
-  authStore: AuthStore
 }
 
 @inject(store => ({
   questStore: store.questStore,
-  authStore: store.authStatus,
 }))
 @observer
 class PublishPage extends Taro.Component<PublishPageProps> {
-
+  userInfo: Taro.getUserInfo.PromisedPropUserInfo ;
   public static defaultProps: PublishPageProps;
 
   public async componentDidMount() {
-    let res = await this.props.authStore.getUserInfo();
-    console.log(this.props.authStore.userInfo);
+    await this.props.questStore.getUserInfo();
+    console.log('state', this.props.questStore.userInfo);
   }
 
   public render() {
