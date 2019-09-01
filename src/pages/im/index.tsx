@@ -1,16 +1,17 @@
 import { Button, Form, Input, Label, View } from '@tarojs/components';
 import { inject, observer } from '@tarojs/mobx';
 import Taro from '@tarojs/taro';
-import QuestStore from 'src/store/quest';
+import { PersonlStore } from 'src/store/personlStore';
 import { AtButton, AtForm, AtInput } from 'taro-ui';
 import Chatroom from './Chatroom'
+import './index.less'
 
 interface IMProps {
-  questStore: QuestStore;
+  personalStore: PersonlStore;
 }
 
 @inject(store => ({
-  questStore: store.questStore,
+  personalStore: store.personalStore,
 }))
 @observer
 class IM extends Taro.Component<IMProps> {
@@ -18,7 +19,7 @@ class IM extends Taro.Component<IMProps> {
   public static defaultProps: IMProps;
 
   public render() {
-    return <View>
+    return <View className="container">
       <Chatroom></Chatroom>
     </View>;
   }

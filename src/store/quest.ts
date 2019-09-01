@@ -28,17 +28,6 @@ export class QuestStore {
     );
   }
 
-  @action public getUserInfo(){
-    cloud({
-      name: 'getuserinfo',
-    }).then(
-      res => {
-        console.log('res', res);
-        this.userInfo = res;
-      }
-    )
-  }
-
   public publish(quest: Quest) {
     cloud({
       name: 'addDbTask',

@@ -1,88 +1,156 @@
 import { Button, Form, Input, Label, View, ScrollView, Image } from '@tarojs/components';
 import { inject, observer } from '@tarojs/mobx';
 import Taro from '@tarojs/taro';
-import QuestStore from 'src/store/quest';
+import { PersonlStore } from 'src/store/personlStore';
 import { AtButton, AtForm, AtInput } from 'taro-ui';
+const phptoSrc = require('./photo.png');
+import './index.less';
 
 interface ChatRoomProps {
-  questStore: QuestStore;
+  personalStore: PersonlStore;
 }
 
-@inject(store => ({
-  questStore: store.questStore,
-}))
+enum MessageClass {
+  text = 'text',
+}
+
+const session_id = '5d262bd45d6a63b60ea4d22250c2bf03'
+
+@inject('personalStore')
 @observer
 class ChatRoom extends Taro.Component<ChatRoomProps> {
 
+  // public static
   public static defaultProps: ChatRoomProps;
+  public timer;
+
+  constructor(props) {
+    super(props)
+  }
+
+  public state = {
+    inputValue: ''
+  };
+
+  public onGetUserInfo() {
+    this.props.personalStore.uploadUserInfo();
+  }
+
+  public async componentDidMount() {
+    await this.props.personalStore.getUserInfo();
+    await this.props.personalStore.pullMessage({
+      session_id
+    })
+    this.timer = setInterval(() => {
+      this.props.personalStore.pullMessage({
+        session_id
+      })
+    }, 1000)
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timer)
+  }
+
+  public async sendMessage(text: string) {
+    this.props.personalStore.pushMessage({
+      session_id,
+      type: MessageClass.text,
+      data: {
+        text
+      },
+    })
+  }
 
   public render() {
-    let chats: any[] = [];
-    let openId = '';
-    return <View>
-      <View className="chatroom">
-        <View className="header">
-          <View className="left"></View>
-          <View className="middle">groupName</View>
-          <View className="right"></View>
-        </View>
-        <ScrollView
-          className="body"
-          scroll-y
-          scroll-with-animation="{{scrollWithAnimation}}"
-          scroll-top="{{scrollTop}}"
-          scroll-into-View="{{scrollToMessage}}"
-          // bindscrolltoupper="onScrollToUpper"
-        >
-          {chats.map(item => (
-            <View className={`message ${openId == item._openid ? 'message__self' : ''}`}>
-              <Image
-                className="avatar"
-                src={item.avatar}
-                mode="scaleToFill"
-              ></Image>
-              <View className="main">
-                <View className="nickname">{item.nickName}</View>
+    let userInfo = this.props.personalStore.userInfo;
+    console.log('render');
+    console.log(userInfo);
 
-                <View className="text-wrapper">
-                  {item.writeStatus === 'pending' && <View>···</View>}
-                  <View className="text-content">{item.textContent}</View>
-                </View>
+    let openId = userInfo && userInfo.openid;
+    return <View className={`chatroom`}>
+      <View className="header">
+        <View className="left"></View>
+        <View className="middle">聊天室</View>
+        <View className="right"></View>
+      </View>
+      <ScrollView
+        className={`body ${userInfo && userInfo.nickname ? '' : 'hidden'}`}
+        scroll-y
+        scroll-with-animation="{{scrollWithAnimation}}"
+        scroll-top="{{scrollTop}}"
+        scroll-into-View="{{scrollToMessage}}"
+      // bindscrolltoupper="onScrollToUpper"
+      >
+        {this.props.personalStore.msgList.map(item => {
+          console.log(item);
+          return (<View className={`message ${openId == item.sender.openid ? 'message__self' : ''}`}>
+            <Image
+              className="avatar"
+              src={item.sender && item.sender.icon_url}
+              mode="scaleToFill"
+            ></Image>
+            <View className="main">
+              <View className="nickname">{item.sender.nickname}</View>
+
+              <View className="text-wrapper">
+                {/* {item.writeStatus === 'pending' && <View>···</View>} */}
+                <View className="text-content">{item.content.data.text}</View>
               </View>
             </View>
-          ))}
-        </ScrollView>
-        <View className="footer">
+          </View>
+          )
+        })}
+      </ScrollView>
+      <View className="footer">
+        {userInfo && userInfo.nickname && (
           <View className="message-sender">
-            <Input
-              className="text-input"
-              type="text"
-              confirm-type="send"
-              // bindconfirm="onConfirmSendText"
-              cursor-spacing="20"
-              value="{{textInputValue}}"
-            ></Input>
+            <View className="text-input">
+              <Input
+                value={this.state.inputValue}
+                name="message"
+                className=""
+                type="text"
+                confirm-type="发送"
+                onInput={
+                  (e) => {
+                    this.setState({
+                      inputValue: e.detail.value
+                    })
+                  }
+                }
+                cursor-spacing="20"
+                onConfirm={
+                  (e) => {
+                    this.sendMessage(e.detail.value);
+                    this.setState({
+                      inputValue: ''
+                    })
+                  }
+                }
+              ></Input>
+            </View>
 
             <Image
-              src="./photo.png"
+              src={phptoSrc}
               className="btn-send-image"
               mode="scaleToFill"
             // bindtap="onChooseImage"
             ></Image>
           </View>
-
-          <View className="message-sender">
-            <Button
-              open-type="getUserInfo"
-              // bindgetuserinfo="onGetUserInfo"
-              className="userinfo"
-            >请先登录后参与聊天</Button>
-          </View>
-        </View >
+        )}
+        {
+          (!userInfo) && (
+            <View className="message-sender">
+              <Button
+                open-type="getUserInfo"
+                className="userinfo"
+                onGetUserInfo={this.onGetUserInfo}
+              >请先登录后参与聊天</Button>
+            </View>)
+        }
       </View >
-
-
-    </View >;
+    </View >
   }
 }
 

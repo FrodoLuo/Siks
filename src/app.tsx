@@ -4,7 +4,6 @@ import Taro, { Component, Config, stopRecord } from '@tarojs/taro';
 import 'taro-ui/dist/style/index.scss';
 import './app.less';
 import Index from './pages/index';
-import IM from './pages/im'
 import store from './store';
 
 // 如果需要在 h5 环境中开启 React Devtools
@@ -26,6 +25,7 @@ class App extends Component {
     pages: [
       'pages/index/index',
       'pages/quest-detail/index',
+      'pages/im/index',
     ],
     window: {
       backgroundTextStyle: 'light',

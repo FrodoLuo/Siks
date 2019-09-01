@@ -1,35 +1,36 @@
 import { Button, Form, Input, Label, View } from '@tarojs/components';
 import { inject, observer } from '@tarojs/mobx';
 import Taro from '@tarojs/taro';
-import { QuestStore } from 'src/store/quest';
+import { PersonlStore } from 'src/store/personlStore';
 import { AtAvatar } from 'taro-ui'
 import './index.less';
 
 interface PublishPageProps {
-  questStore: QuestStore;
+  personalStore: PersonlStore;
 }
 
 @inject(store => ({
-  questStore: store.questStore,
+  personalStore: store.personalStore,
 }))
 @observer
 class PublishPage extends Taro.Component<PublishPageProps> {
-  userInfo: Taro.getUserInfo.PromisedPropUserInfo ;
+  userInfo: Taro.getUserInfo.PromisedPropUserInfo;
   public static defaultProps: PublishPageProps;
 
   public async componentDidMount() {
-    await this.props.questStore.getUserInfo();
-    console.log('state', this.props.questStore.userInfo);
+    await this.props.personalStore.getUserInfo();
   }
 
   public render() {
+    let userInfo = this.props.personalStore.userInfo;
+    // console.log(userInfo);
     return <View>
       <View className="container">
         <View className="userInfo">
-          <AtAvatar image='https://jdc.jd.com/img/200' size="large" circle={true} />
+          <AtAvatar image={userInfo.icon_url} size="large" circle={true} />
           <View className="info">
-            <View>xxx</View>
-            <View>xx大学</View>
+            <View>{userInfo.nickname}</View>
+            <View>{userInfo.school.name}</View>
           </View>
         </View>
         <View className="buttonList">
