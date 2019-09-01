@@ -115,8 +115,8 @@ export class PublishController {
   @action public async publish(): Promise<number | false> {
     const data = {
       content: this.content,
+      cover: this.imageUrl,
       expire: this.expire,
-      files: this.files,
       gold: this.gold,
       name: this.name,
       school: schoolConfig.schools[this.school]._id,

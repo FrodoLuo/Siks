@@ -53,36 +53,6 @@ export class QuestStore {
       this.listStatus = res.length < 10 ? 'noMore' : 'more';
     });
   }
-
-  @action
-  public accept(actId: string) {
-    // 分享
-  }
-
-  @action
-  public pass(actId: string) {
-    // 分享
-  }
-
-  @action
-  public admit(actId: string) {
-    // todo
-  }
-
-  @action
-  public found(actId: string) {
-    // 分享
-  }
-
-  @action
-  public reject(actId: string) {
-    // todo
-  }
-
-  @action
-  public giveUp(actId: string) {
-    // refresh
-  }
 }
 
 export default new QuestStore();
@@ -98,4 +68,5 @@ export interface Quest {
   consumed_num?: number;
   school: string;
   user: UserInfo;
+  status: 'created' | 'passing' | 'suspect' | 'failed' | 'success';
 }

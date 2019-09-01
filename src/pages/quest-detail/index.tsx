@@ -4,9 +4,11 @@ import { Component } from '@tarojs/taro';
 import { ComponentType } from 'react';
 import { QuestDetailStore } from 'src/store/questDetailStore';
 import QuestDetailContent from './components/detail';
-import Metadata from './components/metadata';
-import './index.less';
 import LinkRoadCard from './components/link-road';
+import Metadata from './components/metadata';
+
+import { AtButton } from 'taro-ui';
+import './index.less';
 interface QuestDetailPageProps extends Component {
   questDetailStore: QuestDetailStore;
 }
@@ -22,14 +24,9 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
     this.props.questDetailStore.getDetail(id);
   }
 
-  public switchQuestStatus = () => {
-    switch (this.props.questDetailStore.currentQuest!) {
-      // todo
-    }
-    return null;
-  }
   public render() {
     const meta = this.props.questDetailStore.currentQuest;
+    const service = this.props.questDetailStore;
     if (!meta) {
       return null;
     }
@@ -39,7 +36,44 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
         <QuestDetailContent title={meta.title} content={meta.content} cover="" />
         <LinkRoadCard quest={meta} />
         <View className="btn-wrap">
-          {this.switchQuestStatus()}
+          {
+            meta.status === 'created'
+              ? (<View>
+                <AtButton onClick={() => service.showUp(meta._id)}>
+                  是我
+                </AtButton>
+                <AtButton onClick={() => service.join(meta._id)}>
+                  我来帮忙
+                </AtButton>
+              </View>)
+              : null
+          }
+          {
+            meta.status === 'passing'
+              ? (<View>
+                <AtButton onClick={() => service.share(meta._id)}>
+                  我认识TA
+              </AtButton>
+                <AtButton onClick={() => service.passOn(meta._id)}>
+                  接着找吧
+              </AtButton>
+              </View>)
+              : null
+          }
+          {
+            meta.status === 'suspect'
+              ? (<View>
+                <AtButton onClick={() => service.reject(meta._id)}>
+                  不是我
+                  {/* // 可能要改成拒绝或者之类的文案 */}
+                </AtButton>
+                <AtButton onClick={() => service.admit(meta._id)}>
+                  是我
+                  {/* // 可能要改成接受之类的文案 */}
+                </AtButton>
+              </View>)
+              : null
+          }
         </View>
       </View>);
   }
