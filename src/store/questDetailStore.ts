@@ -10,86 +10,147 @@ export class QuestDetailStore {
   @observable
   public questStatus: 'init' | 'token' | 'locked' | 'ended';
 
+  @observable
+  public found = false;
+
+  @observable
+  public currentLinkId: string | null = null;
+
+  @action
+  public async afterAction(taksId) {
+    return await this.getDetail(taksId);
+  }
+
   @action
   public async getDetail(id: string) {
     const res = await cloud({
       name: 'gettask',
       data: {
         _id: id,
+        link_id: this.currentLinkId,
       },
     });
     this.currentQuest = res;
+    if (this.currentQuest!.joined) {
+      this.currentLinkId = this.currentQuest!.currentLines![0]._id;
+    }
+    return true;
   }
 
   @action
-  public join(taskId: string) {
-    cloud({
+  public setCurrentLinkId(linkId: string) {
+    this.currentLinkId = linkId;
+  }
+
+  @action
+  public async join(task_id: string) {
+    const res = await cloud({
       name: 'addTaskLine',
       data: {
-        taskId,
+        task_id,
         action: 'join',
       },
     });
+    if (res) {
+      return this.afterAction(task_id);
+    } else {
+      return null;
+    }
   }
 
   @action
-  public passOn(taskId: string) {
-    cloud({
+  public async passOn(task_id: string) {
+    const res = await cloud({
       name: 'updateLinkStatus',
       data: {
-        taskId,
+        task_id,
         action: 'passOn',
+        link_id: this.currentLinkId,
       },
     });
+    if (res) {
+      return this.afterAction(task_id);
+    } else {
+      return null;
+    }
   }
 
   @action
-  public admit(taskId: string) {
-    cloud({
+  public async admit(task_id: string) {
+    const res = await cloud({
       name: 'updateLinkStatus',
       data: {
-        taskId,
+        task_id,
         action: 'admit',
+        link_id: this.currentLinkId,
       },
     });
+    if (res) {
+      return this.afterAction(task_id);
+    } else {
+      return null;
+    }
   }
 
   @action
-  public showUp(taskId: string) {
-    cloud({
+  public async showUp(task_id: string) {
+    const res = await cloud({
       name: 'addTaskLine',
       data: {
-        taskId,
+        task_id,
         action: 'showUp',
       },
     });
+    if (res) {
+      return this.afterAction(task_id);
+    } else {
+      return null;
+    }
   }
 
   @action
-  public reject(taskId: string) {
+  public async reject(task_id: string) {
     // todo
-    cloud({
+    const res = await cloud({
       name: 'updateLinkStatus',
       data: {
-        taskId,
+        task_id,
         action: 'reject',
+        link_id: this.currentLinkId,
       },
     });
+    if (res) {
+      return this.afterAction(task_id);
+    } else {
+      return null;
+    }
   }
 
   @action
-  public giveUp(taskId: string) {
-    cloud({
+  public async giveUp(task_id: string) {
+    const res = await cloud({
       name: 'updateLinkStatus',
       data: {
-        taskId,
+        task_id,
         action: 'giveUp',
+        link_id: this.currentLinkId,
       },
     });
+    if (res) {
+      return this.afterAction(task_id);
+    } else {
+      return null;
+    }
   }
 
   @action
-  public share(taskId: string) {
+  public async share(task_id: string) {
+    this.found = true;
+  }
+
+  @action
+  public resetShare() {
+    this.found = false;
   }
 }
 

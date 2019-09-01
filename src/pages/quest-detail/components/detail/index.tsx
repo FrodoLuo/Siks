@@ -13,18 +13,17 @@ const QuestDetailContent = ({ title, content, cover }: QDCProps) => {
       <View className="title-wrap">
         {title}
       </View>
-
+      <View className="content">
+        {content}
+      </View>
       {cover
         ? (
           <View className="cover-wrap">
-            <Image src={cover}></Image>
+            <Image className="image" mode="widthFix" src={cover}></Image>
           </View>
         )
         : null
       }
-      <View className="content">
-        {content}
-      </View>
     </View>
   );
 };

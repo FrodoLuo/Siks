@@ -134,7 +134,6 @@ export class PublishController {
         url: `/pages/quest-detail/index?id=${res._id}`,
       });
     }
-    this.currentStage = PUBLISH_STAGE.FINISHED;
     return false;
   }
 }

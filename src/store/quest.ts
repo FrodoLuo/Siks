@@ -66,7 +66,14 @@ export interface Quest {
   published_time?: string;
   close_time?: string;
   consumed_num?: number;
+  currentLines?: Array<{
+    _id: string;
+    task_id: string;
+    status: 'passing' | 'suspect' | 'success' | 'failed';
+  }>;
   school: string;
   user: UserInfo;
-  status: 'created' | 'passing' | 'suspect' | 'failed' | 'success';
+  joined: boolean;
+  key: string;
+  status: 'created' | 'passing' | 'suspect' | 'failed' | 'success' | 'owner';
 }

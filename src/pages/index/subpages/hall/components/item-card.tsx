@@ -21,7 +21,9 @@ export default ({ quest }: { quest: Quest }) => {
     >
       <View className="siks">
         <View className="content">
-          {quest.cover ? (<View className="cover-wraper"><Image src={quest.cover} /></View>) : null}
+          {quest.cover ? (<View className="cover-wrapper">
+            <Image className="image" src={quest.cover} mode="aspectFill" />
+          </View>) : null}
           <View className="descriptions">
             {quest.content}
           </View>
