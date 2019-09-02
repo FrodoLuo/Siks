@@ -1,6 +1,13 @@
 import Taro from '@tarojs/taro';
 
-Taro.cloud.init();
+
+(async function () {
+  Taro.cloud.init();
+  // const db = Taro.cloud.database({
+    // env: 'dev-dy5o'
+  // })
+  // console.log(await db.collection('chatcontent').get());
+})()
 
 const config = {
   baseUrl: 'api.weixin.qq.com/',
