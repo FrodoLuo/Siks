@@ -1,6 +1,6 @@
 import { Button, Form, Input, Label, View, ScrollView, Image } from '@tarojs/components';
 import { inject, observer } from '@tarojs/mobx';
-import Taro, { cloud as nativeCloud , Config} from '@tarojs/taro';
+import Taro, { cloud as nativeCloud, Config } from '@tarojs/taro';
 import { PersonlStore, MessageClass, MaskStatus, MessageRes } from '../../../../src/store/personlStore';
 import { AtButton, AtForm, AtInput } from 'taro-ui';
 const phptoSrc = require('./photo.png');
@@ -42,7 +42,7 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
   public async componentDidMount() {
     await this.props.personalStore.getUserInfo();
 
-    if(!this.session_id) return;
+    if (!this.session_id) return;
     await Promise.all([this.fetchMes(), this.fetchDetail()])
 
     this.timer = setInterval(() => {
@@ -199,6 +199,13 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
     })
   }
 
+  public async endSession(choice) {
+    this.props.personalStore.endSession({
+      session_id: this.session_id,
+      choice
+    })
+  }
+
   public render() {
     let userInfo = this.props.personalStore.userInfo;
     let chatTimes = this.props.personalStore.chatTimes
@@ -214,23 +221,31 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
 
 
     return <View className={`chatroom`}>
-      {/* <View className="header">
-        <View className="left"></View>
-        <View className="middle">聊天室</View>
-        <View className="right"></View>
-      </View> */}
+      <View className={`header ${userInfo && userInfo.nickname ? '' : 'hidden'}`}>
+        <View className="left">Ta是你要找的人吗</View>
+        <View className="middle">
+          <Button onClick={() => this.endSession(true)}>
+            是
+          </Button>
+        </View>
+        <View className="right">
+          <Button onClick={() => this.endSession(false)}>
+            不是
+          </Button>
+        </View>
+      </View>
       {status == MaskStatus.acceptMask && (<View className="maskList">
         <Image
           src={finder.url}
           className="mask"
           mode="aspectFit"
-          style={{filter: `blur(${16-chatTimes}px)`}}
+          style={{ filter: `blur(${16 - chatTimes}px)` }}
         ></Image>
         <Image
           src={findee.url}
           className="mask"
           mode="aspectFit"
-          style={{filter: `blur(${16-chatTimes}px)`}}
+          style={{ filter: `blur(${16 - chatTimes}px)` }}
         ></Image>
       </View>)}
       <ScrollView
@@ -288,6 +303,7 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
                 cursor-spacing="20"
                 onConfirm={
                   (e) => {
+                    if (!e.detail.value) return
                     this.sendMessage(e.detail.value);
                     this.setState({
                       inputValue: ''
@@ -297,6 +313,7 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
               ></Input>
             </View>
             <Button className="btn" onClick={() => {
+              if (!this.state.inputValue) return
               this.sendMessage(this.state.inputValue);
               this.setState({
                 inputValue: ''

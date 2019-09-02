@@ -198,6 +198,14 @@ export class PersonlStore {
       this.sessionDetail = {}
     }
   }
+
+  public async endSession(data){
+    let res = await cloud({
+      name: 'confirmFindee',
+      data
+    });
+  }
+
 }
 
 
