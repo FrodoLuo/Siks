@@ -63,6 +63,7 @@ export interface Quest {
   gold: number;
   content: string;
   cover?: string | null;
+  position: number;
   published_time?: string;
   close_time?: string;
   consumed_num?: number;
@@ -70,6 +71,11 @@ export interface Quest {
     _id: string;
     task_id: string;
     status: 'passing' | 'suspect' | 'success' | 'failed';
+    consumers: Array<
+      {
+        icon_url: string;
+      }
+    >;
   }>;
   school: string;
   user: UserInfo;
