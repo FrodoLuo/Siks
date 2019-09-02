@@ -11,7 +11,7 @@ interface ChatRoomProps {
 }
 
 
-const session_id = '0377e702-60c0-415a-a538-96b09f938037'
+// const session_id = '0377e702-60c0-415a-a538-96b09f938037'
 
 @inject('personalStore')
 @observer
@@ -20,9 +20,11 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
   // public static
   public static defaultProps: ChatRoomProps;
   public timer;
+  session_id: string
 
   constructor(props) {
     super(props)
+    this.session_id = this.$router.params.session_id;
   }
 
   public state = {
@@ -45,14 +47,14 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
 
   public async fetchDetail() {
     await this.props.personalStore.getSessionDetail({
-      session_id
+      session_id: this.session_id,
     })
   }
 
   public async fetchMes() {
     let userInfo = this.props.personalStore.userInfo;
     let msgList = await this.props.personalStore.pullMessage({
-      session_id
+      session_id: this.session_id
     })
     console.log('chatTimes' + this.props.personalStore.chatTimes);
 
@@ -110,7 +112,7 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
 
   public async refuceMask() {
     await this.props.personalStore.pushMessage({
-      session_id,
+      session_id: this.session_id,
       type: MessageClass.refuseMask,
       data: {
       }
@@ -169,7 +171,7 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
 
   public async launchMaskImg(fileID, type) {
     await this.props.personalStore.pushMessage({
-      session_id,
+      session_id: this.session_id,
       type,
       data: {
         imgUrl: fileID
@@ -184,7 +186,7 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
 
   public async sendMessage(text: string) {
     this.props.personalStore.pushMessage({
-      session_id,
+      session_id: this.session_id,
       type: MessageClass.text,
       data: {
         text
