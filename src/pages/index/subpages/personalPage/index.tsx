@@ -39,7 +39,13 @@ class PublishPage extends Taro.Component<PublishPageProps> {
         </View>
         <View className="menu">
           <Button>我的钱包</Button>
-          <Button>消息中心</Button>
+          <Button onClick={
+            () => {
+              Taro.navigateTo({
+                url: `/pages/msg-center/index`,
+              });
+            }
+          }>消息中心</Button>
           <Button>帮助中心</Button>
           <Button>投诉</Button>
         </View>

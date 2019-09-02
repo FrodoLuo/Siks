@@ -1,6 +1,6 @@
 import { Button, Form, Input, Label, View, ScrollView, Image } from '@tarojs/components';
 import { inject, observer } from '@tarojs/mobx';
-import Taro, { cloud as nativeCloud } from '@tarojs/taro';
+import Taro, { cloud as nativeCloud , Config} from '@tarojs/taro';
 import { PersonlStore, MessageClass, MaskStatus, MessageRes } from '../../../../src/store/personlStore';
 import { AtButton, AtForm, AtInput } from 'taro-ui';
 const phptoSrc = require('./photo.png');
@@ -17,6 +17,10 @@ interface ChatRoomProps {
 @inject('personalStore')
 @observer
 class ChatRoom extends Taro.Component<ChatRoomProps> {
+
+  public config: Config = {
+    navigationBarTitleText: '聊天室',
+  };
 
   // public static
   public static defaultProps: ChatRoomProps;
@@ -39,6 +43,7 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
     this.session_id = this.props.sessionId;
     await this.props.personalStore.getUserInfo();
 
+    if(!this.session_id) return;
     await Promise.all([this.fetchMes(), this.fetchDetail()])
 
     this.timer = setInterval(() => {
@@ -210,11 +215,11 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
 
 
     return <View className={`chatroom`}>
-      <View className="header">
+      {/* <View className="header">
         <View className="left"></View>
         <View className="middle">聊天室</View>
         <View className="right"></View>
-      </View>
+      </View> */}
       {status == MaskStatus.acceptMask && (<View className="maskList">
         <Image
           src={finder.url}

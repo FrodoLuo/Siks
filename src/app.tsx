@@ -26,6 +26,7 @@ class App extends Component {
       'pages/index/index',
       'pages/quest-detail/index',
       'pages/im/index',
+      'pages/msg-center/index',
     ],
     window: {
       backgroundTextStyle: 'light',
