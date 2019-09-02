@@ -53,7 +53,7 @@ class PublishPage extends Taro.Component<PublishPageProps> {
                   <View>
                     发布成功
                   <View className="form-item">
-                      <AtButton openType="share">转发给其他人</AtButton>
+                      <AtButton type="primary" className="sik-btn" openType="share">转发给其他人</AtButton>
                     </View>
                   </View>
                 </AtModal>
@@ -222,7 +222,7 @@ class PublishPage extends Taro.Component<PublishPageProps> {
               || publishController.currentStage === PUBLISH_STAGE.IDENTIFICATION
               ? (
                 <View className="form-item">
-                  <AtButton
+                  <AtButton type="primary" className="sik-btn"
                     onClick={
                       () => {
                         publishController.update('currentStage', PUBLISH_STAGE.CONTENT_AND_IMG);
@@ -241,7 +241,7 @@ class PublishPage extends Taro.Component<PublishPageProps> {
             publishController.currentStage === PUBLISH_STAGE.CONTENT_AND_IMG
               ? (
                 <View className="form-item">
-                  <AtButton
+                  <AtButton type="primary" className="sik-btn"
                     onClick={
                       () => {
                         publishController.update('currentStage', PUBLISH_STAGE.DETAILING);
@@ -263,7 +263,7 @@ class PublishPage extends Taro.Component<PublishPageProps> {
             )
               ? (
                 <View className="form-item">
-                  <AtButton
+                  <AtButton type="primary" className="sik-btn"
                     disabled={!this.props.publishController.valid()}
                     onClick={this.submit}
                   >发布</AtButton>
