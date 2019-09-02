@@ -1,7 +1,7 @@
 import { Picker, View } from '@tarojs/components';
 import { inject, observer } from '@tarojs/mobx';
 import Taro from '@tarojs/taro';
-import { Quest, QuestStore } from 'src/store/quest';
+import quest, { Quest, QuestStore } from 'src/store/quest';
 import school, { SchoolConfig } from 'src/store/school';
 import { AtIcon, AtLoadMore } from 'taro-ui';
 import ItemCard from './components/item-card';
@@ -21,9 +21,9 @@ class HallPage extends Taro.Component<PageStateProps> {
   public static defaultProps: PageStateProps;
 
   public sorts = [
-    '按时间',
-    '按热度',
-    '按赏金',
+    '新鲜出炉',
+    '今日精选',
+    '赏金丰厚',
   ];
 
   public componentDidMount() {
@@ -48,8 +48,9 @@ class HallPage extends Taro.Component<PageStateProps> {
     const schools = this.props.schoolConfig.schools;
     const currentSchool = schools[this.props.questStore.currentSchool];
     const t = currentSchool ? currentSchool.name : '';
+    const questStore = this.props.questStore;
     return (
-      <View>
+      <View className="page-content">
         <View className="filter-container">
           <View className="filters">
             <Picker
@@ -57,12 +58,12 @@ class HallPage extends Taro.Component<PageStateProps> {
               range={schools.map(item => item.name)}
               value={this.props.questStore.currentSchool}
               onChange={e => {
-                console.log(6666123);
                 this.props.questStore.currentSchool = Number.parseInt(e.detail.value, 10);
                 this.refreshList();
               }}
             >
               <View className="school">
+                <AtIcon value="map-pin"></AtIcon>
                 {t}
                 <AtIcon value="chevron-down"></AtIcon>
               </View>
@@ -70,20 +71,24 @@ class HallPage extends Taro.Component<PageStateProps> {
 
           </View>
           <View className="sorts">
-            <Picker
-              mode="selector"
-              range={this.sorts}
-              value={this.props.questStore.currentSort}
-              onChange={e => {
-                this.props.questStore.currentSort = Number.parseInt(e.detail.value, 10);
-                this.refreshList();
-              }}
+            <View
+              onClick={() => { questStore.currentSort = 1; questStore.getQuests(); }}
+              className={`sort-item ${questStore.currentSort === 1 ? 'active' : ''}`}
             >
-              <View className="sort">
-                {this.sorts[this.props.questStore.currentSort]}
-                <AtIcon value="chevron-down"></AtIcon>
-              </View>
-            </Picker>
+              今日精选
+            </View>
+            <View
+              onClick={() => { questStore.currentSort = 0; questStore.getQuests(); }}
+              className={`sort-item ${questStore.currentSort === 0 ? 'active' : ''}`}
+            >
+              新鲜出炉
+            </View>
+            <View
+              onClick={() => { questStore.currentSort = 2; questStore.getQuests(); }}
+              className={`sort-item ${questStore.currentSort === 2 ? 'active' : ''}`}
+            >
+              赏金丰厚
+            </View>
           </View>
         </View>
         <View className="quest-container">
