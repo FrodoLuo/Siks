@@ -34,9 +34,10 @@
   flex: 2;
   display: flex;
   flex-direction: column;
-  background: rgb(237,237,237);
+  background: rgb(237, 237, 237);
   padding-bottom: 16rpx;
-  &.hidden{
+
+  &.hidden {
     opacity: 0;
   }
 }
@@ -98,7 +99,7 @@
   max-width: 80%;
 }
 
-.body .message.message__self .text-wrapper .loading{
+.body .message.message__self .text-wrapper .loading {
   font-size: 16rpx;
   margin-right: 18rpx;
 }
@@ -125,8 +126,8 @@
   flex-direction: row;
   border-top: 1px solid #ddd;
   font-size: 10rpx;
-  padding: 20rpx 30rpx;
-  background: rgb(246,246,246);
+  padding: 20rpx 10rpx 20rpx;
+  background: rgb(246, 246, 246);
 }
 
 .chatroom .footer .message-sender {
@@ -137,12 +138,16 @@
 
 .message-sender .text-input {
   flex: 1;
-  font-size: 16px;
+  font-size: 30rpx;
   border: 1px solid transparent;
   border-radius: 5px;
   padding: 3px 6px;
-  margin: 0 10px 0 5px;
+  margin: 0 10rpx 0 15rpx;
   background: #fff;
+}
+
+.message-sender .btn {
+  text-align: center;
 }
 
 .message-sender .btn-send-image {
@@ -161,4 +166,18 @@ button.userinfo {
   padding: 0 100rpx;
   border: 1px solid #ddd;
   border-radius: 20px;
+}
+
+.maskList {
+  // background: rgb(237, 237, 237);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 300rpx;
+  padding: 0 120rpx;
+
+  .mask {
+    height: 200rpx;
+    width: 125rpx;
+  }
 }

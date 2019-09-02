@@ -11,19 +11,51 @@ type MessageType = {
   type: string,
   data: {
     text?
+    imgUrl?: string,
   }
 }
 
-type MessageRes = {
+export type MessageRes = {
   timestamp: number;
   sender: any;
   content: {
     type: string;
     data: {
-      text?: string
+      text?: string,
+      imgUrl?: string,
     }
   }
 }
+
+export enum MaskStatus {
+  init = 'init',
+  launchMask = 'launchMask',
+  acceptMask = 'acceptMask',
+  end = 'end',
+}
+
+type SessionDetail = {
+  status: MaskStatus;
+  wxid: string;
+  taskid: string;
+  findee: {
+    openid: string;
+    url: string
+  }
+  finder: {
+    openid: string;
+    url: string
+  }
+}
+
+export enum MessageClass {
+  text = 'text',
+  askWechat = 'askWechat',
+  launchMask = 'launchMask',
+  acceptMask = 'acceptMask',
+  refuseMask = 'refuseMask',
+}
+
 
 type PullReqType = {
   session_id: string,
@@ -31,17 +63,18 @@ type PullReqType = {
 }
 
 export class PersonlStore {
-  @observable public msgList: MessageRes[] = []
+  @observable public textMsgList: MessageRes[] = []
   @observable public userInfo: any = {}
-
+  //@ts-ignore
+  @observable public sessionDetail: SessionDetail = {}
+  @observable public launchMaskMsg: any = {}
+  @observable public acceptMaskMsg: any = {}
+  @observable public chatTimes: number = 0;
   @action public async getUserInfo() {
-    cloud({
+    let res = await cloud({
       name: 'getuserinfo',
-    }).then(
-      res => {
-        this.userInfo = res;
-      }
-    )
+    })
+    this.userInfo = res;
   }
 
   @action public async uploadUserInfo() {
@@ -57,15 +90,12 @@ export class PersonlStore {
     });
   }
 
-  @action public pushMessage(data: MessageType) {
-    cloud({
+  @action public async pushMessage(data: MessageType) {
+    let res = await cloud({
       name: 'push',
       data
-    }).then(
-      res => {
-        console.log('res', res);
-      }
-    )
+    })
+    console.log('res', res);
   }
 
   @action public async pullMessage(data: PullReqType) {
@@ -79,19 +109,54 @@ export class PersonlStore {
     Object.assign(data, {
       timestamp // 带上缓存消息的最新事件戳
     })
-    cloud({
+    let res = await cloud({
       name: 'pull',
       data
-    }).then(
-      res => {
-        if (!(res instanceof Array)) return;
-        let newMsgList = [...msgList, ...res];
-        if (res.length > 0 || this.msgList.length != newMsgList.length) {
-          this.msgList = newMsgList;
-          this.setLocalMessages(session_id, this.msgList);
-        }
+    })
+    // console.log('res', res);
+    let newMsgList;
+    if (!(res instanceof Array)) {
+      newMsgList = [...msgList]
+      res = []
+    } else {
+      newMsgList = [...msgList, ...res];
+    }
+    this.setLocalMessages(session_id, newMsgList);
+
+    let newTextMsgList = newMsgList.filter(_ => (_.content.type == MessageClass.text));
+    this.chatTimes = this.countTimes(newTextMsgList);
+
+    if (this.textMsgList.length != newTextMsgList.length) { // 有新的文本消息
+      this.textMsgList = newTextMsgList
+    }
+
+    let launchMaskMsgList = res.filter(_ => (_.content.type == MessageClass.launchMask))
+    // console.log('launchMaskMsgList', launchMaskMsgList);
+    if (launchMaskMsgList.length > 0) {
+      this.launchMaskMsg = launchMaskMsgList.shift();
+    } else {
+      this.launchMaskMsg = []
+    }
+
+    let AcceptMaskMsgList = res.filter(_ => (_.content.type == MessageClass.acceptMask))
+    // console.log('launchMaskMsgList', launchMaskMsgList);
+    if (AcceptMaskMsgList.length > 0) {
+      this.acceptMaskMsg = AcceptMaskMsgList.shift();
+    } else {
+      this.acceptMaskMsg = []
+    }
+  }
+
+  public countTimes(newTextMsgList: MessageRes[]) {
+    let count = 0;
+    let openid = ''
+    newTextMsgList.forEach(msg => {
+      if (msg.sender.openid !== openid) {
+        openid = msg.sender.openid
+        count++
       }
-    )
+    });
+    return count;
   }
 
   public async setLocalMessages(session_id, content: MessageRes[]) {
@@ -117,6 +182,22 @@ export class PersonlStore {
     }
   }
 
+  public async getSessionDetail(data) {
+    try {
+      cloud({
+        name: 'getDetail',
+        data
+      }).then(
+        res => {
+          console.log('res', res);
+          this.sessionDetail = res
+        }
+      )
+    } catch (e) {
+      //@ts-ignore
+      this.sessionDetail = {}
+    }
+  }
 }
 
 
