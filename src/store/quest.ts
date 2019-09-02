@@ -71,6 +71,7 @@ export interface Quest {
     _id: string;
     task_id: string;
     status: 'passing' | 'suspect' | 'success' | 'failed';
+    sessionid: string;
     consumers: Array<
       {
         icon_url: string;

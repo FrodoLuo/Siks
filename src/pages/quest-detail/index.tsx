@@ -91,8 +91,12 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
     });
   }
 
-  public enterChatroom = () => {
-    // todo
+  public enterChatroom = (sessionId?: string) => {
+    const lines = this.props.questDetailStore.currentQuest!.currentLines || [];
+    const line = lines[0] || {};
+    Taro.navigateTo({
+      url: `/pages/im/index?session_id=${sessionId || line.sessionid}`,
+    });
   }
 
   /**
@@ -186,7 +190,7 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
                     <AtAvatar image={this.props.authStatus.userInfo!.avatarUrl}></AtAvatar>
                   </View>
                   <View className="sik-btn-container center">
-                    <AtButton type="primary" className="sik-btn">加入匿名聊天</AtButton>
+                    <AtButton type="primary" className="sik-btn" onClick={() => { this.enterChatroom() }}>加入匿名聊天</AtButton>
                   </View>
                 </View>
               ) : (
@@ -321,7 +325,7 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
                     <AtAvatar image={this.props.authStatus.userInfo!.avatarUrl}></AtAvatar>
                   </View>
                   <View className="sik-btn-container center">
-                    <AtButton type="primary" className="sik-btn">加入匿名聊天</AtButton>
+                    <AtButton type="primary" className="sik-btn" onClick={() => { this.enterChatroom() }}>加入匿名聊天</AtButton>
                   </View>
                 </View>
               )

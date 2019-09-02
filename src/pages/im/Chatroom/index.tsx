@@ -8,6 +8,7 @@ import './index.less';
 
 interface ChatRoomProps {
   personalStore: PersonlStore;
+  sessionId: string;
 }
 
 
@@ -20,11 +21,10 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
   // public static
   public static defaultProps: ChatRoomProps;
   public timer;
-  session_id: string
+  public session_id: string;
 
   constructor(props) {
     super(props)
-    this.session_id = this.$router.params.session_id;
   }
 
   public state = {
@@ -36,6 +36,7 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
   }
 
   public async componentDidMount() {
+    this.session_id = this.props.sessionId;
     await this.props.personalStore.getUserInfo();
 
     await Promise.all([this.fetchMes(), this.fetchDetail()])
@@ -219,13 +220,13 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
           src={finder.url}
           className="mask"
           mode="aspectFit"
-          style={{filter: `blur(${16-chatTimes}px)`}}
+          style={{ filter: `blur(${16 - chatTimes}px)` }}
         ></Image>
         <Image
           src={findee.url}
           className="mask"
           mode="aspectFit"
-          style={{filter: `blur(${16-chatTimes}px)`}}
+          style={{ filter: `blur(${16 - chatTimes}px)` }}
         ></Image>
       </View>)}
       <ScrollView
