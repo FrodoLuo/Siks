@@ -16,6 +16,9 @@ export class QuestDetailStore {
   @observable
   public currentLinkId: string | null = null;
 
+  @observable
+  public loading = true;
+
   @action
   public async afterAction(taksId) {
     return await this.getDetail(taksId);
@@ -23,6 +26,7 @@ export class QuestDetailStore {
 
   @action
   public async getDetail(id: string) {
+    this.loading = true;
     const res = await cloud({
       name: 'gettask',
       data: {
@@ -34,6 +38,7 @@ export class QuestDetailStore {
     if (this.currentQuest!.joined) {
       this.currentLinkId = this.currentQuest!.currentLines![0]._id;
     }
+    this.loading = false;
     return true;
   }
 

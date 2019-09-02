@@ -4,6 +4,7 @@ import Taro, { Component, Config } from '@tarojs/taro';
 import { ComponentType } from 'react';
 import { AtButton, AtModal, AtTabBar } from 'taro-ui';
 
+import AuthComponent from '../../components/auth';
 import { AuthStatus } from '../../store/auth';
 import './index.less';
 import HallPage from './subpages/hall';
@@ -80,21 +81,6 @@ class Index extends Component {
   public render() {
     return (
       <View className="index">
-        {this.state.authorized === false
-          ? (
-            <AtModal isOpened closeOnClickOverlay={false}>
-              <View>登录小程序, 加入六度寻人</View>
-              <AtButton
-                openType="getUserInfo"
-                type="primary"
-                onGetUserInfo={this.closeAuth}
-              >
-                登录
-              </AtButton>
-            </AtModal>
-          )
-          : null
-        }
         <AtTabBar
           fixed={true}
           current={this.state.current}
@@ -112,7 +98,10 @@ class Index extends Component {
             : null
         }{
           this.state.current === 1
-            ? <View className="page-content"><PublishPage /></View>
+            ? <View className="page-content">
+              <AuthComponent />
+              <PublishPage />
+            </View>
             : null
         }{
           this.state.current === 2

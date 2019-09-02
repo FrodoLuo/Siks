@@ -4,17 +4,47 @@ import Taro, { Component } from '@tarojs/taro';
 import { ComponentType } from 'react';
 import { QuestDetailStore } from 'src/store/questDetailStore';
 import QuestDetailContent from './components/detail';
-import { EmptyRoadNodeItem, LinkRoadItem } from './components/link-road';
 import Metadata from './components/metadata';
 
-import quest from 'src/store/quest';
 import { AtAvatar, AtButton, AtModal, AtModalAction, AtModalContent, AtModalHeader } from 'taro-ui';
+import AuthComponent from '../../components/auth';
+import Loading from '../../components/loading';
+import { AuthStatus } from '../../store/auth';
+import { Quest } from '../../store/quest';
 import './index.less';
 interface QuestDetailPageProps extends Component {
   questDetailStore: QuestDetailStore;
+  authStatus: AuthStatus;
 }
 
+enum Identity {
+  VISITOR,          // 与任务无关的访问者
+  OWNER,            // 任务的发起者
+  PARTICIPATOR,     // 任务传递的参与者
+  SUSPECT_TARGET,   // 任务链路的潜在目标
+}
+
+const VISITOR_TEXT = {
+  exhausted: '任务链路已达上限',
+  failed: '任务已经失败',
+  success: '任务已成功',
+};
+
+const OWNER_TEXT = {
+  failed: '很不幸, 任务已经失败了',
+  owner: '任务进行中',
+  success: '任务已成功',
+};
+
+const PARTICIPATOR_TEXT = {
+  failed: '任务已失败',
+  passing: '任务进行中',
+  success: '任务已成功',
+  suspect: '链路已建立, 请静候佳音',
+};
+
 @inject('questDetailStore')
+@inject('authStatus')
 @observer
 class QuestDetailPage extends Component<QuestDetailPageProps> {
 
@@ -32,6 +62,10 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
       this.props.questDetailStore.currentLinkId = null;
     }
     this.props.questDetailStore.getDetail(id);
+  }
+
+  public componentWillUnmount() {
+    this.props.questDetailStore.loading = true;
   }
 
   public onShareAppMessage() {
@@ -61,134 +95,259 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
     // todo
   }
 
+  /**
+   * 根据任务信息判断当前访问者的身份
+   * @param quest 任务信息
+   */
+  public dispatchIdentity(quest: Quest): Identity {
+    if (quest.status === 'owner') {
+      return Identity.OWNER; // 任务发起人
+    }
+    if (!quest.joined) {
+      return Identity.VISITOR; // 无关访问者
+    } else {
+      const lines = quest.currentLines || [];
+      const line = lines[0] || null;
+      const consumers = line ? line.consumers : [];
+      if (quest.status === 'suspect') {
+        if (quest.position === consumers.length - 1) {
+          return Identity.SUSPECT_TARGET; // 潜在寻找目标
+        } else {
+          return Identity.PARTICIPATOR; // 参与者
+        }
+      } else {
+        return Identity.PARTICIPATOR; // 参与者
+      }
+    }
+  }
+
+  /**
+   * Holy Jesus! States here is extremly complicated!
+   */
   public render() {
-    console.info('params', this.$router.params);
-    const meta = this.props.questDetailStore.currentQuest;
-    console.log(meta);
-    const service = this.props.questDetailStore;
-    if (!meta) {
+    const store = this.props.questDetailStore;
+    const quest = this.props.questDetailStore.currentQuest;
+    if (!quest) {
+      if (!store.loading) {
+        Taro.showToast({
+          title: '路径错误, 任务不存在',
+          icon: 'error',
+          duration: 3000,
+        });
+      }
       return null;
     }
-    const lines = meta.currentLines || [];
+
+    const loading = store.loading;
+
+    /**
+     * 首先需要判断访问者的身份, 现在一共存在这么四种身份
+     * Owner = 任务发起者, Visitor = 没有参与的访问者, Participator = 参与者, Suspect Target = 潜在目标
+     */
+    const identity = this.dispatchIdentity(quest);
+
+    const lines = quest.currentLines || [];
+
+    const line = lines[0] || {};
+
+    const isFoundedShare = this.$router.params.found || false;
+
     return (
       <View className="page-content">
-        <Metadata meta={meta} toggle={false} />
-        <QuestDetailContent title={meta.title} content={meta.content} cover={meta.cover || ''} />
-        <View>当前链路状态</View>
-        <View className="link-road-wrap">
-          {
-            meta.status === 'owner'
-              ? lines.map(line => (
-                <View className="link-road-container">
-                  {
-                    line.consumers.map((consumer, index) => (
-                      <View className="link-road-item-wrap">
-                        <View className="link-road-item">
-                          <View>
-                            <AtAvatar
-                              size="small"
-                              image={consumer.icon_url}
-                              openData={{ type: 'userAvatarUrl' }}
-                              circle={true}
-                            ></AtAvatar>
-                          </View>
-                          {
-                            meta.position === line.consumers.length - 2 && index === line.consumers.length - 1
-                              ? <View>踢人</View>
-                              : null
-                          }
-                        </View>
-                      </View>
-                    ))
-                  }
-                  {
-                    new Array(6 - line.consumers.length).fill(0).map(_ => (
-                      <View className="link-road-item-wrap">
-                        <View className="link-road-item">
-                          <View><View className="empty"></View></View>
-                        </View>
-                      </View>
-                    ))
-                  }
-                </View>
-              ))
-              : null
-          }
-        </View>
-        <AtModal isOpened={this.state.showShare}>
-          <AtModalHeader>转发找人</AtModalHeader>
-          <AtModalContent>转发出去, 寻找那个TA吧!</AtModalContent>
+        <AuthComponent />
+        <AtModal
+          isOpened={this.state.showShare}
+        >
+          <AtModalHeader>转发出去</AtModalHeader>
+          <AtModalContent>转发任务, 让你认识的人来找到TA</AtModalContent>
           <AtModalAction>
-            <Button onClick={this.closeShare}>取消</Button>
-            <Button openType="share">确认</Button>
+            <Button>取消</Button>
+            <Button type="primary">转发</Button>
           </AtModalAction>
         </AtModal>
-        <View className="btn-wrap" hidden={meta.joined}>
-          {
-            meta.status === 'created'
-              ? (<View>
-                <AtButton onClick={() => service.showUp(meta._id)}>
-                  是我
-                </AtButton>
-                <AtButton
-                  onClick={() =>
-                    service.join(meta._id)
-                      .then(result => {
-                        if (result) {
 
-                        }
-                      })
-                  }
-                >
-                  我来帮忙
-                </AtButton>
-              </View>)
-              : null
-          }
-          {
-            meta.status === 'passing' && (this.$router.params.found !== '1')
-              ? (<View>
-                <AtButton onClick={() => {
-                  service.share(meta._id);
-                  this.openShare();
-                }}>
-                  我认识TA
-              </AtButton>
-                <AtButton openType="share" onClick={() => service.passOn(meta._id)}>
-                  接着找吧
-              </AtButton>
-              </View>)
-              : null
-          }
-          {
-            meta.status === 'passing' && (this.$router.params.found === '1')
-              ? (<View>
-                <AtButton onClick={() => service.reject(meta._id)}>
-                  不是我
-                  {/* // 可能要改成拒绝或者之类的文案 */}
-                </AtButton>
-                <AtButton onClick={() => service.admit(meta._id)}>
-                  是我
-                  {/* // 可能要改成接受之类的文案 */}
-                </AtButton>
-              </View>)
-              : null
-          }
-        </View>
-        <View>
-          {
-            meta.status === 'failed'
-              ? '很遗憾, 链路已经失败'
-              : meta.status === 'suspect'
-                ? meta.joined && (meta.position === meta.currentLines![0].consumers.length)
-                  ? <View><AtButton onClick={this.enterChatroom}>进入聊天室</AtButton></View>
-                  : '链路已被锁定'
-                : meta.status === 'success'
-                  ? '任务已完成'
-                  : null
-          }
-        </View>
-      </View>);
+        {
+          loading
+            ? <Loading />
+            : null
+        }
+
+        { /* 确认为潜在对象的访问者只能看到进入匿名聊天的界面 */
+          !loading && identity === Identity.SUSPECT_TARGET
+            ? quest.status === 'suspect'
+              ? (
+                <View className="">
+                  <View>{line!.consumers.length > 1
+                    ? `经过${line!.consumers.length}人, TA终于找到了你`
+                    : '这一定是缘分, 让你们在茫茫人群中相遇'
+                  }</View>
+                  <View className="avatar-wrap">
+                    <AtAvatar image={quest.user.icon_url}></AtAvatar>
+                    <AtAvatar image={this.props.authStatus.userInfo!.avatarUrl}></AtAvatar>
+                  </View>
+                  <View className="sik-btn-container center">
+                    <AtButton type="primary" className="sik-btn">加入匿名聊天</AtButton>
+                  </View>
+                </View>
+              ) : PARTICIPATOR_TEXT[quest.status]
+            : null
+        }
+
+        { /* 非潜在对象的所有访问者都能看到任务的详情 */
+          !loading && (identity === Identity.OWNER || identity === Identity.PARTICIPATOR || identity === Identity.VISITOR)
+            ? (
+              <View>
+                <Metadata meta={quest} toggle={false} />
+                <QuestDetailContent title={quest.title} content={quest.content} cover={quest.cover || ''} />
+              </View>
+            )
+            : null
+        }
+
+        { /* 只有参与者与任务发起者能看到链路状态 */
+          !loading && (identity === Identity.OWNER || identity === Identity.PARTICIPATOR)
+            ? (
+              <View className="link-road-wrap">
+                {
+                  lines.map(l => (
+                    <View className="link-road-container">
+                      {
+                        l.consumers.map((consumer, index) => (
+                          <View className="link-road-item-wrap">
+                            <View className="link-road-item">
+                              <View>
+                                <AtAvatar
+                                  size="small"
+                                  image={consumer.icon_url}
+                                  openData={{ type: 'userAvatarUrl' }}
+                                  circle={true}
+                                ></AtAvatar>
+                              </View>
+                              { /*
+                                // identity === Identity.PARTICIPATOR && quest.position === l.consumers.length - 2 && index === l.consumers.length - 1
+                                //   ? <View>踢人</View>
+                                //   : null
+                              */}
+                            </View>
+                          </View>
+                        ))
+                      }
+                      {
+                        new Array(6 - line.consumers.length).fill(0).map(_ => (
+                          <View className="link-road-item-wrap">
+                            <View className="link-road-item">
+                              <View><View className="empty"></View></View>
+                            </View>
+                          </View>
+                        ))
+                      }
+                    </View>
+                  ))
+                }
+              </View>
+            )
+            : null
+        }
+
+        { /* 根据任务状态与身份的不同, 每个人看到的可操作性面板也不尽相同 */
+          !loading && identity === Identity.VISITOR   /*对于访问者*/
+            ? quest.status === 'created'  /* 任务还可以被接受*/
+              ? (
+                <View className="sik-btn-container">
+                  <AtButton type="primary" className="sik-btn" onClick={() => store.showUp(quest._id)}>
+                    是我
+                  </AtButton>
+                  <AtButton type="primary" className="sik-btn"
+                    onClick={() =>
+                      store.join(quest._id)
+                        .then(result => {
+                          if (result) {
+                            this.openShare();
+                          }
+                        })
+                    }
+                  >
+                    我来帮忙
+                  </AtButton>
+                </View>
+              )
+              : quest.status === 'passing'
+                ? isFoundedShare /* 访问者还没有参与到任务中, 但TA被认为是潜在对象 */
+                  ? (
+                    <View className="sik-btn-container">
+                      <AtButton type="primary" className="sik-btn" onClick={() => store.reject(quest._id)}>
+                        不是我
+                        {/* // 可能要改成拒绝或者之类的文案 */}
+                      </AtButton>
+                      <AtButton type="primary" className="sik-btn" onClick={() => store.admit(quest._id)}>
+                        是我
+                        {/* // 可能要改成接受之类的文案 */}
+                      </AtButton>
+                    </View>
+                  )
+                  : ( /* 任务在传递中, 这是按照接茬的人来看, 因为这个页面是只能被分享出去的 */
+                    <View className="sik-btn-container">
+                      <AtButton
+                        type="primary"
+                        className="sik-btn"
+                        onClick={() => {
+                          store.share(quest._id);
+                          this.openShare();
+                        }}
+                      >
+                        我认识TA
+                      </AtButton>
+                      <AtButton
+                        type="primary"
+                        className="sik-btn"
+                        openType="share"
+                        onClick={() => store.passOn(quest._id)}
+                      >
+                        接着找吧
+                      </AtButton>
+                    </View>
+                  )
+                : VISITOR_TEXT[quest.status]
+            : null
+        }
+        { /* 对于发起人 */
+          !loading && identity === Identity.OWNER
+            ? quest.status === 'suspect'
+              ? (
+                <View className="">
+                  <View>{line!.consumers.length > 1
+                    ? `经过${line!.consumers.length}人, TA终于找到了你`
+                    : '这一定是缘分, 让你们在茫茫人群中相遇'
+                  }</View>
+                  <View className="avatar-wrap">
+                    <AtAvatar image={quest.user.icon_url}></AtAvatar>
+                    <AtAvatar image={this.props.authStatus.userInfo!.avatarUrl}></AtAvatar>
+                  </View>
+                  <View className="sik-btn-container center">
+                    <AtButton type="primary" className="sik-btn">加入匿名聊天</AtButton>
+                  </View>
+                </View>
+              )
+              : OWNER_TEXT[quest.status]
+            : null
+        }
+        { /* 对于参与者 */
+          identity === Identity.PARTICIPATOR
+            ? quest.status === 'passing'
+              ? quest.position === 5
+                ? (
+                  <View className="sik-btn-container">
+                    <AtButton className="sik-btn">我认识TA</AtButton>
+                    <AtButton className="sik-btn">放弃寻找</AtButton>
+                  </View>
+                )
+                : PARTICIPATOR_TEXT[quest.status]
+              : PARTICIPATOR_TEXT[quest.status]
+            : null
+
+        }
+      </View>
+    );
   }
 }
 
