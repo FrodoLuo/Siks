@@ -1,6 +1,6 @@
 import { Button, Form, Input, Label, View } from '@tarojs/components';
 import { inject, observer } from '@tarojs/mobx';
-import Taro from '@tarojs/taro';
+import Taro, { Config } from '@tarojs/taro';
 import { PersonlStore } from 'src/store/personlStore';
 import { AtButton, AtForm, AtInput } from 'taro-ui';
 import Chatroom from './Chatroom'
@@ -15,6 +15,10 @@ interface IMProps {
 }))
 @observer
 class IM extends Taro.Component<IMProps> {
+
+  public config: Config = {
+    navigationBarTitleText: '聊天室',
+  };
 
   public static defaultProps: IMProps;
 

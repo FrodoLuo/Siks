@@ -18,10 +18,6 @@ interface ChatRoomProps {
 @observer
 class ChatRoom extends Taro.Component<ChatRoomProps> {
 
-  public config: Config = {
-    navigationBarTitleText: '聊天室',
-  };
-
   // public static
   public static defaultProps: ChatRoomProps;
   public timer;
