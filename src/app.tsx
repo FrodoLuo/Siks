@@ -36,6 +36,7 @@ class App extends Component {
   };
 
   public componentDidMount() {
+    store.schoolConfig.getSchoolConfig();
   }
 
   public componentDidShow() { }

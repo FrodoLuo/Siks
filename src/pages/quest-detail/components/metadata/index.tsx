@@ -1,8 +1,8 @@
 import { Image, View } from '@tarojs/components';
 import { Component } from '@tarojs/taro';
-
 import { Quest } from 'src/store/quest';
-import { AtIcon, AtAvatar } from 'taro-ui';
+import { AtAvatar, AtIcon } from 'taro-ui';
+import schoolStore from '../../../../store/school';
 import './index.less';
 
 interface MetadataProps {
@@ -23,11 +23,11 @@ const Metadata = ({ meta, toggle }: MetadataProps) => {
           </View>
         )}
       <View className="nick-wrap">
-        <View>NickName</View>
+        <View>{meta.user.nickname || '匿名'}</View>
         <View>{new Date(Number.parseInt(meta.published_time!, 10)).toLocaleString()}</View>
       </View>
       <View className="quest-info">
-        <View>{meta.school}</View>
+        <View>{(schoolStore.schools.find(item => item._id === meta.school) || { name: '' }).name}</View>
         <View><AtIcon value="sketch"></AtIcon>{meta.gold}</View>
       </View>
     </View>
