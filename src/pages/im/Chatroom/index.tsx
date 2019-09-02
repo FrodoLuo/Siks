@@ -8,6 +8,7 @@ import './index.less';
 
 interface ChatRoomProps {
   personalStore: PersonlStore;
+  sessionId: string;
 }
 
 
@@ -24,11 +25,10 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
   // public static
   public static defaultProps: ChatRoomProps;
   public timer;
-  session_id: string
+  public session_id: string;
 
   constructor(props) {
     super(props)
-    this.session_id = this.$router.params.session_id;
   }
 
   public state = {
@@ -40,6 +40,7 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
   }
 
   public async componentDidMount() {
+    this.session_id = this.props.sessionId;
     await this.props.personalStore.getUserInfo();
 
     if (!this.session_id) return;

@@ -20,7 +20,7 @@ class IM extends Taro.Component<IMProps> {
 
   public render() {
     return <View className="container">
-      <Chatroom></Chatroom>
+      <Chatroom sessionId={this.$router.params.session_id}></Chatroom>
     </View>;
   }
 }
