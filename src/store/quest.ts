@@ -6,12 +6,16 @@ import schoolStore from './school';
 export class QuestStore {
   @observable public quests: Quest[] = [];
 
-  @observable public currentSort: number = 0;
+  @observable public currentSort: number = 1;
   @observable public currentSchool: number = 0;
   @observable public listStatus: 'more' | 'loading' | 'noMore' = 'more';
 
   @action public getQuests(start = 0, num = 10) {
     this.listStatus = 'loading';
+    if (start === 0 && num === 10) {
+      this.quests = [];
+      console.log(123);
+    }
     // Promise.resolve(questMock)
     //   .then(res => {
     //     this.quests = res;

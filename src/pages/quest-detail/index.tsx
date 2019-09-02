@@ -313,25 +313,9 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
         }
         { /* 对于发起人 */
           !loading && identity === Identity.OWNER
-            ? quest.status === 'suspect'
-              ? (
-                <View className="">
-                  <View>{line!.consumers.length > 1
-                    ? `经过${line!.consumers.length}人, TA终于找到了你`
-                    : '这一定是缘分, 让你们在茫茫人群中相遇'
-                  }</View>
-                  <View className="avatar-wrap">
-                    <AtAvatar image={quest.user.icon_url}></AtAvatar>
-                    <AtAvatar image={this.props.authStatus.userInfo!.avatarUrl}></AtAvatar>
-                  </View>
-                  <View className="sik-btn-container center">
-                    <AtButton type="primary" className="sik-btn" onClick={() => { this.enterChatroom() }}>加入匿名聊天</AtButton>
-                  </View>
-                </View>
-              )
-              : (<View className="hint">
-                {OWNER_TEXT[quest.status]}
-              </View>)
+            ? (<View className="hint">
+              {OWNER_TEXT[quest.status]}
+            </View>)
             : null
         }
         { /* 对于参与者 */

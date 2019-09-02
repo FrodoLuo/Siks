@@ -2,6 +2,7 @@
 
 .page-content {
   padding: 24px;
+  padding-bottom: 124rpx;
 }
 .link-road-container {
   margin-top: 16rpx;
@@ -51,9 +52,17 @@
   border: none;
 }
 .sik-btn-container {
+  box-sizing: border-box;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  box-shadow: 0 10rpx 15rpx rgba(#000000, 1);
+  height: 100rpx;
+  padding-top: 8rpx;
   &.center {
     justify-content: center;
   }

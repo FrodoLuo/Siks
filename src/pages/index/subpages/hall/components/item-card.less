@@ -1,8 +1,56 @@
-.siks {
+.quest-card-wrap {
+  background: white;
+  margin-bottom: 24rpx;
+  padding: 36rpx 36rpx 12rpx 36rpx;
+  font-size: 36rpx;
+  .publisher-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12rpx;
+    .publisher-nick{
+      margin-left: 12rpx;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+
+      .publisher-time {
+        color: #a9a9a9;
+        font-size: 28rpx;
+      }
+      .publisher-name {
+        font-size: 36rpx;
+      }
+    }
+    .amount {
+      display: flex;
+      align-items: center;
+      min-width: 120rpx;
+      .icon{
+        background: gold;
+        border-radius: 50%;
+        color: white;
+        height: 42rpx;
+        width: 42rpx;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10rpx;
+      }
+      font-size: 28rpx;
+      color: gold;
+    }
+  }
   .content {
     display: flex;
     justify-content: flex-start;
     align-items: flex-start;
+    flex-direction: column;
+    font-size: 32rpx;
+    letter-spacing: 2rpx;
+    .title {
+      font-weight: bold;
+    }
     .cover-wrapper {
       height: 200rpx;
       width: 300rpx;
@@ -16,9 +64,8 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    .amount {
-      font-size: 16pt;
-      color: gold;
-    }
+    font-size: 22rpx;
+    color: #d9d9d9;
+    margin-top: 12rpx;
   }
 }
