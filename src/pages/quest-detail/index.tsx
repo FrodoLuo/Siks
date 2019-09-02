@@ -189,7 +189,11 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
                     <AtButton type="primary" className="sik-btn">加入匿名聊天</AtButton>
                   </View>
                 </View>
-              ) : PARTICIPATOR_TEXT[quest.status]
+              ) : (
+                <View className="hint">
+                  {PARTICIPATOR_TEXT[quest.status]}
+                </View>
+              )
             : null
         }
 
@@ -228,15 +232,6 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
                                 //   ? <View>踢人</View>
                                 //   : null
                               */}
-                            </View>
-                          </View>
-                        ))
-                      }
-                      {
-                        new Array(6 - line.consumers.length).fill(0).map(_ => (
-                          <View className="link-road-item-wrap">
-                            <View className="link-road-item">
-                              <View><View className="empty"></View></View>
                             </View>
                           </View>
                         ))
@@ -307,7 +302,9 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
                       </AtButton>
                     </View>
                   )
-                : VISITOR_TEXT[quest.status]
+                : (<View className="hint">
+                  {VISITOR_TEXT[quest.status]}
+                </View>)
             : null
         }
         { /* 对于发起人 */
@@ -328,11 +325,13 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
                   </View>
                 </View>
               )
-              : OWNER_TEXT[quest.status]
+              : (<View className="hint">
+                {OWNER_TEXT[quest.status]}
+              </View>)
             : null
         }
         { /* 对于参与者 */
-          identity === Identity.PARTICIPATOR
+          !loading && identity === Identity.PARTICIPATOR
             ? quest.status === 'passing'
               ? quest.position === 5
                 ? (
@@ -341,8 +340,12 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
                     <AtButton className="sik-btn">放弃寻找</AtButton>
                   </View>
                 )
-                : PARTICIPATOR_TEXT[quest.status]
-              : PARTICIPATOR_TEXT[quest.status]
+                : (<View className="hint">
+                  {PARTICIPATOR_TEXT[quest.status]}
+                </View>)
+              : (<View className="hint">
+                {PARTICIPATOR_TEXT[quest.status]}
+              </View>)
             : null
 
         }
