@@ -47,15 +47,21 @@ class HallPage extends Taro.Component<PageStateProps> {
   public render() {
     const schools = this.props.schoolConfig.schools;
     const currentSchool = schools[this.props.questStore.currentSchool];
-    const t = currentSchool ? currentSchool.name : '';
+    const t = currentSchool ? currentSchool.school : '';
     const questStore = this.props.questStore;
+    const schoolNames = schools.map(item => {
+      const i = { ...item };
+      console.log(i);
+      return i.school;
+    });
+    console.log(schoolNames);
     return (
       <View className="page-content">
         <View className="filter-container">
           <View className="filters">
             <Picker
               mode="selector"
-              range={schools.map(item => item.name)}
+              range={schoolNames}
               value={this.props.questStore.currentSchool}
               onChange={e => {
                 this.props.questStore.currentSchool = Number.parseInt(e.detail.value, 10);
@@ -99,8 +105,8 @@ class HallPage extends Taro.Component<PageStateProps> {
           noMoreText="已加载全部"
           status={this.props.questStore.listStatus}
           onClick={() => { this.props.questStore.getMore(); }}
-          customStyle={{background: 'white' }}
-          moreBtnStyle={{border: 'none'}}
+          customStyle={{ background: 'white' }}
+          moreBtnStyle={{ border: 'none' }}
         >
         </AtLoadMore>
       </View>

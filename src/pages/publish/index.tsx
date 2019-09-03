@@ -5,6 +5,7 @@ import { AtButton, AtForm, AtImagePicker, AtInput, AtModal, AtSwitch, AtTextarea
 import { expires, PUBLISH_STAGE, PublishController } from '../../store/publish';
 
 import { SchoolConfig } from 'src/store/school';
+import AuthComponent from '../../components/auth';
 import './index.less';
 
 interface PublishPageProps {
@@ -53,6 +54,7 @@ class PublishPage extends Taro.Component<PublishPageProps> {
     console.log(this.props.publishController);
     return (
       <View className="page-content">
+        <AuthComponent />
         {
           publishController.currentStage === PUBLISH_STAGE.FINISHED
             ? (
@@ -95,7 +97,6 @@ class PublishPage extends Taro.Component<PublishPageProps> {
                     className="sik-input"
                     onInput={value => publishController.update('content', value.detail.value)}
                     value={publishController.content}
-                    placeholder="输入寻人描述"
                   ></Textarea>
                 </View>
                 <View className="form-item">
@@ -134,14 +135,16 @@ class PublishPage extends Taro.Component<PublishPageProps> {
                     mode="selector"
                     onChange={e => publishController.school = e.detail.value}
                     value={publishController.school || -1}
-                    range={schools.map(item => item.name)}
+                    range={schools.map(item => item.school)}
                   >
                     <View className="picker">
                       {
                         (schoolIndex => {
                           const school = schools[schoolIndex];
                           if (school) {
-                            return school.name;
+                            console.log(school);
+                            console.log(school.school);
+                            return school.school;
                           } else {
                             return '';
                           }
@@ -159,6 +162,7 @@ class PublishPage extends Taro.Component<PublishPageProps> {
                     name="gold"
                     onInput={({ detail }: any) => publishController.gold = Number.parseFloat(detail.value || 0)}
                     type="number"
+                    maxLength={8}
                   ></Input>
                 </View>
                 <View className="form-item">

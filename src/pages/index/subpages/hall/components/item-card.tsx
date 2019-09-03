@@ -2,7 +2,7 @@ import { Image, Text, View } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { Quest } from 'src/store/quest';
 import { AtAvatar, AtCard, AtIcon } from 'taro-ui';
-import schoolConfig from '../../../../../store/school';
+import schoolStore from '../../../../../store/school';
 import { formatDate } from '../../../../../utils/dateFormatter';
 import './item-card.less';
 
@@ -45,7 +45,15 @@ export default ({ quest }: { quest: Quest }) => {
       </View>
       <View className="footer">
         <AtIcon value="map-pin"></AtIcon>
-        {schoolConfig.schools[quest.school].name}
+        {
+          (schoolIndex => {
+            const school = schoolStore.schools.find(s => s._id === schoolIndex);
+            console.log({ ...school });
+            const s = { ...school } as any;
+            const name = s.name || '';
+            return name;
+          })(quest.school)
+        }
       </View>
     </View>
   );
