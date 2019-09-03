@@ -45,7 +45,8 @@ type SessionDetail = {
   finder: {
     openid: string;
     url: string
-  }
+  },
+  globalstatus: string
 }
 
 export enum MessageClass {
@@ -71,6 +72,9 @@ export class PersonlStore {
   @observable public acceptMaskMsg: any = {}
   @observable public chatTimes: number = 0;
   @observable public myMsg: any = []
+  @observable public scrollToMessage: string ='item-0'
+  @observable public myTaskList = []
+  @observable public myLink = []
 
   @action public async getUserInfo() {
     let res = await cloud({
@@ -129,7 +133,10 @@ export class PersonlStore {
     this.chatTimes = this.countTimes(newTextMsgList);
 
     if (this.textMsgList.length != newTextMsgList.length) { // 有新的文本消息
-      this.textMsgList = newTextMsgList
+      this.textMsgList = newTextMsgList;
+      this.scrollToMessage = `item-${newTextMsgList.length - 1}`
+      console.log('scrollToMessage', this.scrollToMessage);
+
     }
 
     let launchMaskMsgList = res.filter(_ => (_.content.type == MessageClass.launchMask))
@@ -213,6 +220,37 @@ export class PersonlStore {
       name: 'message'
     })
     this.myMsg = res
+  }
+
+  @action public async pushMyMsg() {
+    let res = await cloud({
+      name: 'setmessage'
+    })
+    this.myMsg = res
+  }
+
+  @action public async pullMyTask(){
+    let res = await cloud({
+      name: 'getTaskList',
+      data:{
+        start: 0,
+        num: 20,
+        publish: true
+      }
+    })
+    console.log(res);
+  }
+
+  @action public async pullMyLink(){
+    let res = await cloud({
+      name: 'getTaskList',
+      data:{
+        start: 0,
+        num: 20,
+        publish: false
+      }
+    })
+    console.log(res);
   }
 
 }

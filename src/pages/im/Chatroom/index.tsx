@@ -51,13 +51,21 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
     // }).get();
     // console.log('data111', data);
 
+    // console.log('messageListener');
+
     // let messageListener = DB.collection('chatcontent').where({
-    //   session_id:
+    //   _id: this.session_id
+    //   //@ts-ignore
     // }).watch({
     //   onChange: (item) => {
-
+    //     console.log('item!!!!', item);
     //   },
+    //   onError: () => {
+
+    //   }
     // })
+
+
 
 
   }
@@ -140,7 +148,7 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
 
   public async launchMaskImgMode() {
     let sessionDetail = this.props.personalStore.sessionDetail
-    let { status, finder, findee } = sessionDetail
+    let { status, finder, findee, globalstatus} = sessionDetail
 
     if ([MaskStatus.init].includes(status)) {
       Taro.showModal({
@@ -215,11 +223,14 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
   }
 
   public async endSession(choice) {
-    this.props.personalStore.endSession({
+    await this.props.personalStore.endSession({
       session_id: this.session_id,
       choice
     })
 
+    await this.props.personalStore.getSessionDetail({
+      session_id: this.session_id,
+    })
     if (choice) {
       Taro.showToast({
         title: '相遇是缘',
@@ -252,13 +263,13 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
 
     console.log('sessionDetail', sessionDetail);
 
-    let { status, finder, findee } = sessionDetail
+    let { status, finder, findee, globalstatus} = sessionDetail
     let isFinder = openId == (finder && finder.openid)
     let isFindee = openId == (findee && findee.openid)
 
 
     return <View className={`chatroom`}>
-      {isFindee &&
+      {isFinder && (globalstatus != 'success' && globalstatus != 'fail') &&
         <View className={`header ${userInfo && userInfo.nickname ? '' : 'hidden'}`}>
           <View className="left">Ta是你要找的人吗</View>
           <View className="middle">
@@ -292,12 +303,14 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
         scroll-y
         scroll-with-animation="{{scrollWithAnimation}}"
         scroll-top="{{scrollTop}}"
-        scroll-into-View="{{scrollToMessage}}"
+        scrollIntoView={this.props.personalStore.scrollToMessage}
+
       // bindscrolltoupper="onScrollToUpper"
       >
-        {this.props.personalStore.textMsgList.map(item => {
+        {this.props.personalStore.textMsgList.map((item, index) => {
           console.log(item);
-          return (<View className={`message ${openId == item.sender.openid ? 'message__self' : ''}`}>
+          console.log(`item-${index}`);
+          return (<View className={`message ${openId == item.sender.openid ? 'message__self' : ''}`} id={`item-${index}`}>
             <Image
               className="avatar"
               src={item.sender && item.sender.icon_url}
@@ -306,7 +319,7 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
             <View className="main">
               <View className="nickname">{item.sender.nickname}</View>
 
-              <View className="text-wrapper">
+              <View className="text-wrapper" >
                 {/* {item.writeStatus === 'pending' && <View>···</View>} */}
                 <View className="text-content">{item.content.data.text}</View>
               </View>
