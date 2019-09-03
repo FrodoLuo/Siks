@@ -7,7 +7,6 @@ import './item-card.less';
 
 export default ({ quest }: { quest: Quest }) => {
   if (!quest) { return null; }
-  console.log(quest);
   return (
     <View
       className="quest-card-wrap"

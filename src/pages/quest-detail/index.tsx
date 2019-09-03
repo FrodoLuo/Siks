@@ -68,14 +68,21 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
     this.props.questDetailStore.loading = true;
   }
 
-  public onShareAppMessage() {
+  public onShareAppMessage = () => {
     const questStore = this.props.questDetailStore;
+    console.log(questStore);
+    const found = questStore.found;
+    questStore.resetShare();
+
+    const path = `/pages/quest-detail/index?id=${this.$router.params.id}` +
+    `&link_id=${questStore.currentLinkId}` +
+    `&key=${questStore.currentQuest!.key}` +
+    `&found=${found ? '1' :'0'}`;
+
+    console.log(path);
     return {
+      path,
       title: this.props.questDetailStore.currentQuest!.title,
-      path: `/pages/quest-detail/index?id=${this.$router.params.id}` +
-        `&link_id=${questStore.currentLinkId}` +
-        `&key=${questStore.currentQuest!.key}` +
-        `&found=${questStore.found ? 1 : 0}`,
     };
   }
 
@@ -129,6 +136,8 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
    * Holy Jesus! States here is extremly complicated!
    */
   public render() {
+    console.log(this.$router.params);
+
     const store = this.props.questDetailStore;
     const quest = this.props.questDetailStore.currentQuest;
     if (!quest) {
@@ -154,8 +163,9 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
 
     const line = lines[0] || {};
 
-    const isFoundedShare = this.$router.params.found || false;
+    const isFoundedShare = (this.$router.params.found === '1') || false;
 
+    const storeFound = this.props.questDetailStore.found;
     return (
       <View className="page-content">
         <AuthComponent />
@@ -163,10 +173,10 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
           isOpened={this.state.showShare}
         >
           <AtModalHeader>转发出去</AtModalHeader>
-          <AtModalContent>转发任务, 让你认识的人来找到TA</AtModalContent>
+          <AtModalContent>{storeFound ? '转发给TA, 完成任务领取赏金!' : '转发任务, 让你认识的人来找到TA' }</AtModalContent>
           <AtModalAction>
-            <Button>取消</Button>
-            <Button type="primary">转发</Button>
+            <Button onClick={_ => this.closeShare()}>取消</Button>
+            <Button type="primary" openType="share" onClick={this.closeShare}>转发</Button>
           </AtModalAction>
         </AtModal>
 
@@ -190,7 +200,7 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
                     <AtAvatar image={this.props.authStatus.userInfo!.avatarUrl}></AtAvatar>
                   </View>
                   <View className="sik-btn-container center">
-                    <AtButton type="primary" className="sik-btn" onClick={() => { this.enterChatroom() }}>加入匿名聊天</AtButton>
+                    <AtButton type="primary" className="sik-btn" onClick={() => { this.enterChatroom(); }}>加入匿名聊天</AtButton>
                   </View>
                 </View>
               ) : (
@@ -275,11 +285,11 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
                   ? (
                     <View className="sik-btn-container">
                       <AtButton type="primary" className="sik-btn" onClick={() => store.reject(quest._id)}>
-                        不是我
+                        残忍拒绝
                         {/* // 可能要改成拒绝或者之类的文案 */}
                       </AtButton>
                       <AtButton type="primary" className="sik-btn" onClick={() => store.admit(quest._id)}>
-                        是我
+                        聊天试试
                         {/* // 可能要改成接受之类的文案 */}
                       </AtButton>
                     </View>
@@ -290,7 +300,8 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
                         type="primary"
                         className="sik-btn"
                         onClick={() => {
-                          store.share(quest._id);
+                          store.share(true);
+                          store.passOn(quest._id);
                           this.openShare();
                         }}
                       >
@@ -299,8 +310,13 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
                       <AtButton
                         type="primary"
                         className="sik-btn"
-                        openType="share"
-                        onClick={() => store.passOn(quest._id)}
+                        onClick={
+                          () => {
+                            store.share(false);
+                            store.passOn(quest._id);
+                            this.openShare();
+                          }
+                        }
                       >
                         接着找吧
                       </AtButton>
@@ -328,9 +344,30 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
                     <AtButton className="sik-btn">放弃寻找</AtButton>
                   </View>
                 )
-                : (<View className="hint">
-                  {PARTICIPATOR_TEXT[quest.status]}
-                </View>)
+                : quest.position === line.consumers.length - 1
+                  ? (<View className="sik-btn-container">
+                    <AtButton
+                      className="sik-btn"
+                      onClick={() => {
+                        store.share(true);
+                        this.openShare();
+                      }}
+                    >
+                      可能是TA!
+                    </AtButton>
+                    <AtButton
+                      className="sik-btn"
+                      onClick={() => {
+                        store.share(false);
+                        this.openShare();
+                      }}
+                    >
+                      转发出去
+                    </AtButton>
+                  </View>)
+                  : (<View className="hint">
+                    {PARTICIPATOR_TEXT[quest.status]}
+                  </View>)
               : (<View className="hint">
                 {PARTICIPATOR_TEXT[quest.status]}
               </View>)

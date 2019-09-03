@@ -149,8 +149,8 @@ export class QuestDetailStore {
   }
 
   @action
-  public async share(task_id: string) {
-    this.found = true;
+  public share(found: boolean) {
+    this.found = found;
   }
 
   @action

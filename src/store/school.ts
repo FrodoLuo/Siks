@@ -11,7 +11,6 @@ export class SchoolConfig {
       name: 'getschoolist',
     })
       .then(res => {
-        console.log(res);
         this.schools = res;
       });
   }

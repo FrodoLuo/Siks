@@ -14,7 +14,6 @@ export class QuestStore {
     this.listStatus = 'loading';
     if (start === 0 && num === 10) {
       this.quests = [];
-      console.log(123);
     }
     // Promise.resolve(questMock)
     //   .then(res => {
@@ -30,7 +29,6 @@ export class QuestStore {
       },
     }).then(
       res => {
-        console.log(res);
         this.quests = res;
         this.listStatus = res.length < 10 ? 'noMore' : 'more';
       },

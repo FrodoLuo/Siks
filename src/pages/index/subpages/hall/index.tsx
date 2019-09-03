@@ -99,6 +99,8 @@ class HallPage extends Taro.Component<PageStateProps> {
           noMoreText="已加载全部"
           status={this.props.questStore.listStatus}
           onClick={() => { this.props.questStore.getMore(); }}
+          customStyle={{background: 'white' }}
+          moreBtnStyle={{border: 'none'}}
         >
         </AtLoadMore>
       </View>
