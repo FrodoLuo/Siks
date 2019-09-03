@@ -209,9 +209,11 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
   }
 
   componentWillUnmount() {
+    this.props.personalStore.reset();
     console.log('this.timer!!!!', this.timer);
     clearInterval(this.timer)
     clearTimeout(this.timer)
+    this.timer = null;
   }
 
   public async sendMessage(text: string) {

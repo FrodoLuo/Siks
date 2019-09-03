@@ -76,6 +76,19 @@ export class PersonlStore {
   @observable public myTaskList = []
   @observable public myLink = []
 
+  @action public async reset(){
+    //@ts-ignore
+    this.sessionDetail = {};
+    this.textMsgList = []
+    this.launchMaskMsg= {}
+    this.acceptMaskMsg= {}
+    this.chatTimes = 0;
+    this.myMsg= []
+    this.scrollToMessage ='item-0'
+    this.myTaskList = []
+    this.myLink = []
+  }
+
   @action public async getUserInfo() {
     let res = await cloud({
       name: 'getuserinfo',

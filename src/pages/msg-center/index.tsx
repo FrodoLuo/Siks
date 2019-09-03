@@ -6,12 +6,10 @@ import { AtAvatar } from 'taro-ui'
 import './index.less';
 
 interface PublishPageProps {
-  personalStore: PersonlStore;
+  msgCenter: PersonlStore;
 }
 
-@inject(store => ({
-  personalStore: store.personalStore,
-}))
+@inject('msgCenter')
 @observer
 class PublishPage extends Taro.Component<PublishPageProps> {
   userInfo: Taro.getUserInfo.PromisedPropUserInfo;
@@ -22,14 +20,18 @@ class PublishPage extends Taro.Component<PublishPageProps> {
   };
 
   public async componentDidMount() {
-    // await this.props.personalStore.getUserInfo();
-    await this.props.personalStore.getMyMsg();
+    // await this.props.msgCenter.getUserInfo();
+    console.log('componentDidMount');
+
+    await this.props.msgCenter.getMyMsg();
   }
 
   public render() {
-    let myMsg = this.props.personalStore.myMsg
+    console.log('render!!!!!!!!');
+
+    let myMsg = this.props.msgCenter.myMsg
     console.log('myMsg', myMsg);
-    let userInfo = this.props.personalStore.userInfo;
+    let userInfo = this.props.msgCenter.userInfo;
     // console.log(userInfo);
     return <View>
       <ScrollView className="chatMessage">
