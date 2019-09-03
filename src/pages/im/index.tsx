@@ -17,7 +17,7 @@ interface IMProps {
 class IM extends Taro.Component<IMProps> {
 
   public config: Config = {
-    navigationBarTitleText: '聊天室',
+    navigationBarTitleText: '聊一聊',
   };
 
   public static defaultProps: IMProps;

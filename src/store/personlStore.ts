@@ -238,6 +238,7 @@ export class PersonlStore {
         publish: true
       }
     })
+    this.myTaskList = res
     console.log(res);
   }
 

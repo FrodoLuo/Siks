@@ -30,15 +30,23 @@ class PublishPage extends Taro.Component<PublishPageProps> {
   }
 
   public render() {
+    console.log('render!!!!!');
+
     let userInfo = this.props.personalStore.userInfo;
     // console.log(userInfo);
     let taskList = this.props.personalStore.myTaskList;
     let linkList = this.props.personalStore.myLink;
+
+    console.log('type' , this.type ,'launch', this.type == 'launch');
+
+    console.log('taskList', taskList);
+
     return <View>
       {this.type == 'launch' && <ScrollView>
-        {/* {taskList.map(item => {
-          <ItemCard quest={item}></ItemCard>
-        })} */}
+        {taskList.map(item => {
+          console.log('item', item);
+          return (<ItemCard quest={item}></ItemCard>)
+        })}
       </ScrollView>}
       {this.type == 'join' && <ScrollView>
 

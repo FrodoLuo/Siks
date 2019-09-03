@@ -209,7 +209,9 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
   }
 
   componentWillUnmount() {
+    console.log('this.timer!!!!', this.timer);
     clearInterval(this.timer)
+    clearTimeout(this.timer)
   }
 
   public async sendMessage(text: string) {
@@ -317,8 +319,7 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
               mode="scaleToFill"
             ></Image>
             <View className="main">
-              <View className="nickname">{item.sender.nickname}</View>
-
+              {/* <View className="nickname">{item.sender.nickname}</View> */}
               <View className="text-wrapper" >
                 {/* {item.writeStatus === 'pending' && <View>···</View>} */}
                 <View className="text-content">{item.content.data.text}</View>
