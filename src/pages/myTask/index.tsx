@@ -4,6 +4,7 @@ import Taro, { Config } from '@tarojs/taro';
 import { PersonlStore } from 'src/store/personlStore';
 import { AtAvatar } from 'taro-ui'
 import './index.less';
+import ItemCard from '../../pages/index/subpages/hall/components/item-card';
 
 interface PublishPageProps {
   personalStore: PersonlStore;
@@ -31,8 +32,17 @@ class PublishPage extends Taro.Component<PublishPageProps> {
   public render() {
     let userInfo = this.props.personalStore.userInfo;
     // console.log(userInfo);
+    let taskList = this.props.personalStore.myTaskList;
+    let linkList = this.props.personalStore.myLink;
     return <View>
+      {this.type == 'launch' && <ScrollView>
+        {/* {taskList.map(item => {
+          <ItemCard quest={item}></ItemCard>
+        })} */}
+      </ScrollView>}
+      {this.type == 'join' && <ScrollView>
 
+      </ScrollView>}
     </View >;
   }
 
