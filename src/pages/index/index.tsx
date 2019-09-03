@@ -2,8 +2,9 @@ import { Button, Image, Text, View } from '@tarojs/components';
 import { inject, observer } from '@tarojs/mobx';
 import Taro, { Component, Config } from '@tarojs/taro';
 import { ComponentType } from 'react';
-import { AtButton, AtModal, AtTabBar, AtIcon } from 'taro-ui';
+import { AtButton, AtIcon, AtModal, AtTabBar } from 'taro-ui';
 
+import { QuestStore } from 'src/store/quest';
 import AuthComponent from '../../components/auth';
 import { AuthStatus } from '../../store/auth';
 import './index.less';
@@ -12,6 +13,7 @@ import PersonalPage from './subpages/personalPage';
 
 interface PageStateProps {
   authStatus: AuthStatus;
+  questStore: QuestStore;
 }
 
 interface Index {
@@ -20,6 +22,7 @@ interface Index {
 
 @inject(store => ({
   authStatus: store.authStatus,
+  questStore: store.questStore,
 }))
 @observer
 class Index extends Component {
@@ -33,6 +36,7 @@ class Index extends Component {
    */
   public config: Config = {
     navigationBarTitleText: '大厅',
+    enablePullDownRefresh: true,
   };
 
   public state = {
@@ -51,6 +55,10 @@ class Index extends Component {
   public componentDidShow() { }
 
   public componentDidHide() { }
+
+  public onPullDownRefresh() {
+    this.props.questStore.getQuests();
+  }
 
   public handleNav = event => {
     if (event === 1) {

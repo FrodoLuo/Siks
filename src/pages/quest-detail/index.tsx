@@ -189,7 +189,7 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
         <AtModal
           isOpened={this.state.showShare}
         >
-          <AtModalHeader>转发出去</AtModalHeader>
+          <AtModalHeader>接着找吧</AtModalHeader>
           <AtModalContent>{storeFound ? '转发给TA, 完成任务领取赏金!' : '转发任务, 让你认识的人来找到TA'}</AtModalContent>
           <AtModalAction>
             <Button onClick={_ => this.closeShare()}>取消</Button>
@@ -425,7 +425,7 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
                         this.openShare();
                       }}
                     >
-                      转发出去
+                      接着找吧
                     </AtButton>
                   </View>)
                   : (<View className="hint">
