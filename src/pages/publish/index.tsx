@@ -155,9 +155,9 @@ class PublishPage extends Taro.Component<PublishPageProps> {
                     填写一下赏金吧
                   </Label>
                   <Input
-                    className="sik-input"
+                    className="sik-input input"
                     name="gold"
-                    onInput={({ detail }: any) => publishController.gold = Number.parseFloat(detail.value)}
+                    onInput={({ detail }: any) => publishController.gold = Number.parseFloat(detail.value || 0)}
                     type="number"
                   ></Input>
                 </View>
@@ -172,7 +172,17 @@ class PublishPage extends Taro.Component<PublishPageProps> {
                     range={expires}
                   >
                     <View className="picker">
-                      {expires[publishController.expire || -1]}
+                      {
+                        (expire => {
+                          const e = expires[expire];
+                          if (e) {
+                            return e;
+                          } else {
+                            return '';
+                          }
+                        }
+                        )(publishController.expire || -1)
+                      }
                     </View>
                   </Picker>
                 </View>

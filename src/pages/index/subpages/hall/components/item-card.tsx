@@ -3,6 +3,7 @@ import Taro from '@tarojs/taro';
 import { Quest } from 'src/store/quest';
 import { AtAvatar, AtCard, AtIcon } from 'taro-ui';
 import schoolConfig from '../../../../../store/school';
+import { formatDate } from '../../../../../utils/dateFormatter';
 import './item-card.less';
 
 export default ({ quest }: { quest: Quest }) => {
@@ -23,7 +24,7 @@ export default ({ quest }: { quest: Quest }) => {
             {quest.user.nickname}
           </Text>
           <Text className="publisher-time">
-            {new Date(quest.published_time || '').toLocaleTimeString()}
+            {formatDate(new Date(quest.published_time || ''))}
           </Text>
         </View>
         <View className="amount">

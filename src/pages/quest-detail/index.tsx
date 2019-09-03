@@ -1,4 +1,4 @@
-import { Button, View } from '@tarojs/components';
+import { Button, Navigator, View, Text } from '@tarojs/components';
 import { inject, observer } from '@tarojs/mobx';
 import Taro, { Component } from '@tarojs/taro';
 import { ComponentType } from 'react';
@@ -6,7 +6,7 @@ import { QuestDetailStore } from 'src/store/questDetailStore';
 import QuestDetailContent from './components/detail';
 import Metadata from './components/metadata';
 
-import { AtAvatar, AtButton, AtModal, AtModalAction, AtModalContent, AtModalHeader } from 'taro-ui';
+import { AtAvatar, AtButton, AtIcon, AtModal, AtModalAction, AtModalContent, AtModalHeader } from 'taro-ui';
 import AuthComponent from '../../components/auth';
 import Loading from '../../components/loading';
 import { AuthStatus } from '../../store/auth';
@@ -168,13 +168,23 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
     const storeFound = this.props.questDetailStore.found;
     return (
       <View className="page-content">
-        <Button
-          onClick={() => {
-            Taro.navigateTo({
-              url: '/pages/index/index'
-            });
-          }}
-        >返回</Button>
+        {Taro.getCurrentPages().length === 1 ?
+          (
+            <Navigator>
+              <View
+                className="back-btn"
+                onClick={() => {
+                  Taro.redirectTo({
+                    url: '/pages/index/index',
+                  });
+                }}
+              >
+                <AtIcon
+                  value="chevron-left">
+                </AtIcon>
+              </View>
+            </Navigator>
+          ) : null}
         <AuthComponent />
         <AtModal
           isOpened={this.state.showShare}
@@ -223,10 +233,36 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
             ? (
               <View>
                 <Metadata meta={quest} toggle={false} />
-                <QuestDetailContent title={quest.title} content={quest.content} cover={quest.cover || ''} />
+                <QuestDetailContent school={quest.school} title={quest.title} content={quest.content} cover={quest.cover || ''} />
               </View>
             )
             : null
+        }
+
+        { /* 只有非参与者会看到规则 */
+          !loading && identity === Identity.VISITOR
+            ? (
+              <View className="rule">
+                <View className="title">
+                  怎么玩
+                </View>
+                <View className="rule-item">
+                  1. 转发任务接力找到TA, 有机会分得赏金
+                  </View>
+                <View className="rule-item">
+                  2. 每个任务能被认领10次, 每条链路最多有6名转发者
+                  </View>
+                <View className="rule-item">
+                  3. 如果你认识那个TA, 鼓励他接受私聊建议吧.
+                  </View>
+                <View className="rule-item">
+                  4. 双方在聊天中了解彼此, 知道发布者确认成功
+                  </View>
+                <View className="rule-item">
+                  5. 任务成功后,传播链路上最后两名转发者以4:6比例瓜分赏金.
+                  </View>
+              </View>
+            ) : null
         }
 
         { /* 只有参与者与任务发起者能看到链路状态 */
@@ -236,6 +272,18 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
                 {
                   lines.map(l => (
                     <View className="link-road-container">
+                      <View className="link-road-item-wrap">
+                        <View className="link-road-item">
+                          <View>
+                            <AtAvatar
+                              size="small"
+                              image={quest.user.icon_url}
+                              circle={true}
+                            />
+                          </View>
+                          <View className="name">{quest.user.nickname}</View>
+                        </View>
+                      </View>
                       {
                         l.consumers.map((consumer, index) => (
                           <View className="link-road-item-wrap">
@@ -291,12 +339,10 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
                   ? (
                     <View className="sik-btn-container">
                       <AtButton type="primary" className="sik-btn" onClick={() => store.reject(quest._id)}>
-                        残忍拒绝
-                        {/* // 可能要改成拒绝或者之类的文案 */}
+                        拒绝聊天
                       </AtButton>
                       <AtButton type="primary" className="sik-btn" onClick={() => store.admit(quest._id)}>
-                        聊天试试
-                        {/* // 可能要改成接受之类的文案 */}
+                        匿名聊天
                       </AtButton>
                     </View>
                   )
@@ -352,7 +398,7 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
                         store.share(true);
                         this.openShare();
                       }}
-                    >可能是TA!</AtButton>
+                    >我认识TA</AtButton>
                     <AtButton
                       className="sik-btn"
                       onClick={() => {
@@ -370,7 +416,7 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
                         this.openShare();
                       }}
                     >
-                      可能是TA!
+                      我认识TA
                     </AtButton>
                     <AtButton
                       className="sik-btn"

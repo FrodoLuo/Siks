@@ -1,13 +1,13 @@
-import { Component } from '@tarojs/taro';
-
-import { Image, View } from '@tarojs/components';
+import { Image, View, Text } from '@tarojs/components';
+import { AtIcon } from 'taro-ui';
+import schoolStore from '../../../../store/school';
 import './index.less';
 
 interface QDCProps {
-  title: string; content: string; cover?: string;
+  title: string; content: string; cover?: string; school: string;
 }
 
-const QuestDetailContent = ({ title, content, cover }: QDCProps) => {
+const QuestDetailContent = ({ title, content, cover, school }: QDCProps) => {
   return (
     <View className="content-wrap">
       <View className="title-wrap">
@@ -24,6 +24,12 @@ const QuestDetailContent = ({ title, content, cover }: QDCProps) => {
         )
         : null
       }
+      <View className="school">
+        <AtIcon value="map-pin"></AtIcon>
+        <Text className="school-name">
+          {(schoolStore.schools.find(item => item._id === school) || { name: '' }).name}
+        </Text>
+      </View>
     </View>
   );
 };
