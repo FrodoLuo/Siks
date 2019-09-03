@@ -5,14 +5,14 @@ import { PersonlStore, MessageClass, MaskStatus, MessageRes } from '../../../../
 import { AtButton, AtForm, AtInput } from 'taro-ui';
 const phptoSrc = require('./photo.png');
 import './index.less';
+nativeCloud.init()
+const DB = nativeCloud.database()
 
 interface ChatRoomProps {
   personalStore: PersonlStore;
   sessionId: string;
 }
 
-
-// const session_id = '0377e702-60c0-415a-a538-96b09f938037'
 
 @inject('personalStore')
 @observer
@@ -45,6 +45,21 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
     this.timer = setInterval(() => {
       this.fetchMes()
     }, 1000)
+
+    // const { data } = await DB.collection('message').where({
+    //   '_id': '3c4c6d855d6e842810fe083530c388c4'
+    // }).get();
+    // console.log('data111', data);
+
+    // let messageListener = DB.collection('chatcontent').where({
+    //   session_id:
+    // }).watch({
+    //   onChange: (item) => {
+
+    //   },
+    // })
+
+
   }
 
   public async fetchDetail() {
@@ -159,6 +174,9 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
       sourceType: ['album', 'camera'],
       count: 1,
       success: async (res) => {
+        Taro.showToast({
+          title: '上传图片成功！'
+        })
         let url = res.tempFilePaths[0];
         console.log(url);
         const ret = await nativeCloud.uploadFile({
@@ -201,6 +219,26 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
       session_id: this.session_id,
       choice
     })
+
+    if (choice) {
+      Taro.showToast({
+        title: '相遇是缘',
+      })
+    } else {
+      Taro.showToast({
+        title: '您已拒绝了他',
+      })
+    }
+
+
+    // Taro.showToast({
+    //   title: '恭喜你，穿越人海找到他',
+    //   icon: ''
+    // })
+    // Taro.showToast({
+    //   title: '不要灰心，那个Ta即将出现，再找找吧',
+    // })
+
   }
 
   public render() {
@@ -212,37 +250,41 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
     let openId = userInfo && userInfo.openid;
     let sessionDetail = this.props.personalStore.sessionDetail
 
+    console.log('sessionDetail', sessionDetail);
+
     let { status, finder, findee } = sessionDetail
     let isFinder = openId == (finder && finder.openid)
     let isFindee = openId == (findee && findee.openid)
 
 
     return <View className={`chatroom`}>
-      <View className={`header ${userInfo && userInfo.nickname ? '' : 'hidden'}`}>
-        <View className="left">Ta是你要找的人吗</View>
-        <View className="middle">
-          <Button onClick={() => this.endSession(true)}>
-            是
-          </Button>
+      {isFindee &&
+        <View className={`header ${userInfo && userInfo.nickname ? '' : 'hidden'}`}>
+          <View className="left">Ta是你要找的人吗</View>
+          <View className="middle">
+            <Button onClick={() => this.endSession(true)}>
+              是
+            </Button>
+          </View>
+          <View className="right">
+            <Button onClick={() => this.endSession(false)}>
+              不是
+            </Button>
+          </View>
         </View>
-        <View className="right">
-          <Button onClick={() => this.endSession(false)}>
-            不是
-          </Button>
-        </View>
-      </View>
+      }
       {status == MaskStatus.acceptMask && (<View className="maskList">
         <Image
           src={finder.url}
           className="mask"
           mode="aspectFit"
-          style={{ filter: `blur(${16 - chatTimes}px)` }}
+          style={{ filter: `blur(${6 - chatTimes}px)` }}
         ></Image>
         <Image
           src={findee.url}
           className="mask"
           mode="aspectFit"
-          style={{ filter: `blur(${16 - chatTimes}px)` }}
+          style={{ filter: `blur(${6 - chatTimes}px)` }}
         ></Image>
       </View>)}
       <ScrollView
