@@ -3,7 +3,7 @@ import { cloud } from '../utils/request';
 
 export class SchoolConfig {
   @observable
-  public schools: Array<{ name: string; _id: string; }> = [];
+  public schools: Array<{ school: string; _id: string; }> = [];
 
   @action
   public getSchoolConfig() {
@@ -11,6 +11,7 @@ export class SchoolConfig {
       name: 'getschoolist',
     })
       .then(res => {
+        console.log('school', res);
         this.schools = res;
       });
   }

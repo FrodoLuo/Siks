@@ -4,7 +4,7 @@ import Taro from '@tarojs/taro';
 (async function () {
   Taro.cloud.init();
   // const db = Taro.cloud.database({
-    // env: 'dev-dy5o'
+  // env: 'dev-dy5o'
   // })
   // console.log(await db.collection('chatcontent').get());
 })()
@@ -17,9 +17,9 @@ const config = {
   getData(data) {
     return {
       ...data,
-      appid: 'wx0b414cd6ff08b974',
+      appid: 'wxa499e514eb921c14',
       grant_type: 'client_credential',
-      secret: '3b0c5c56791b31bf74bbfeafccc34b54',
+      secret: '2540b6a5e8655b54feed80d36cd8bb0f',
     };
   },
 };

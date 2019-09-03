@@ -19,13 +19,15 @@ export class QuestStore {
     //   .then(res => {
     //     this.quests = res;
     //   });
+    const currentSchool = schoolStore.schools[this.currentSchool];
+    const schoolId = { ...currentSchool }._id || '';
     cloud<Quest[]>({
       name: 'getTaskList',
       data: {
         num,
         start,
         sort: this.currentSort,
-        school: schoolStore.schools[this.currentSchool] ? schoolStore.schools[this.currentSchool]._id : '',
+        school: schoolId,
       },
     }).then(
       res => {
