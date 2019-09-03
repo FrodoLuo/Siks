@@ -76,7 +76,8 @@ export interface Quest {
     sessionid: string;
     consumers: Array<
       {
-        icon_url: string;
+        iconUrl: string;
+        nickname: string;
       }
     >;
   }>;

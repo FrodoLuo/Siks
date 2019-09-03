@@ -3,6 +3,7 @@ import Taro from '@tarojs/taro';
 import { Quest } from 'src/store/quest';
 import { AtAvatar, AtCard, AtIcon } from 'taro-ui';
 import schoolConfig from '../../../../../store/school';
+import { formatDate } from '../../../../../utils/dateFormatter';
 import './item-card.less';
 
 export default ({ quest }: { quest: Quest }) => {
@@ -17,14 +18,13 @@ export default ({ quest }: { quest: Quest }) => {
       }}
     >
       <View className="publisher-info">
-        <AtAvatar circle={true} />
+        <AtAvatar circle={true} image={quest.user.icon_url} />
         <View className="publisher-nick">
           <Text className="publisher-name">
-            {/* {quest.user.nickname} */}
-            Blaj kop
+            {quest.user.nickname}
           </Text>
           <Text className="publisher-time">
-            {new Date(quest.published_time || '').toLocaleTimeString()}
+            {formatDate(new Date(quest.published_time || ''))}
           </Text>
         </View>
         <View className="amount">

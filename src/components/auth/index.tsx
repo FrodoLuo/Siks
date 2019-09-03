@@ -41,16 +41,16 @@ class AuthComponent extends Component<AuthComponentProps> {
           <Button
             onClick={() => {
               Taro.getCurrentPages().length > 1 ?
-              Taro.navigateBack()
-              : Taro.redirectTo({
-                url: '/pages/index/index',
-              });
+                Taro.navigateBack()
+                : Taro.redirectTo({
+                  url: '/pages/index/index',
+                });
             }}
           >取消</Button>
           <Button
             openType="getUserInfo"
             onGetUserInfo={() => {
-              this.props.authStatus.getUserInfo();
+              this.props.authStatus.getUserInfo(true);
               this.setState({
                 show: false,
               });

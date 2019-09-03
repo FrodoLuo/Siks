@@ -2,14 +2,13 @@ import { Button, Image, Text, View } from '@tarojs/components';
 import { inject, observer } from '@tarojs/mobx';
 import Taro, { Component, Config } from '@tarojs/taro';
 import { ComponentType } from 'react';
-import { AtButton, AtModal, AtTabBar } from 'taro-ui';
+import { AtButton, AtModal, AtTabBar, AtIcon } from 'taro-ui';
 
 import AuthComponent from '../../components/auth';
 import { AuthStatus } from '../../store/auth';
 import './index.less';
 import HallPage from './subpages/hall';
 import PersonalPage from './subpages/personalPage';
-import PublishPage from './subpages/publish';
 
 interface PageStateProps {
   authStatus: AuthStatus;
@@ -54,18 +53,10 @@ class Index extends Component {
   public componentDidHide() { }
 
   public handleNav = event => {
-    if (event === 1 || event === 2) {
-      if (!this.props.authStatus.userInfo) {
-        this.props.authStatus.getUserInfo()
-          .then(res => {
-            this.setState({
-              authorized: res,
-              current: event,
-            });
-          });
-      } else {
-        this.setState({ current: event });
-      }
+    if (event === 1) {
+      Taro.navigateTo({
+        url: '/pages/publish/index',
+      });
     } else {
       this.setState({ current: event });
     }
@@ -81,27 +72,31 @@ class Index extends Component {
   public render() {
     return (
       <View className="index">
-        <AtTabBar
-          fixed={true}
-          current={this.state.current}
-          tabList={[
-            { title: '首页', iconType: 'home' },
-            { title: '发布', iconType: 'add' },
-            { title: '我的', iconType: 'user' },
-          ]}
-          onClick={this.handleNav}
-        >
-        </AtTabBar>
+        <View className="tab-wrap" hidden={this.state.current === 1}>
+          <View
+            onClick={() => this.handleNav(0)}
+            className={`tab-btn ${this.state.current === 0 ? 'active' : ''}`}
+          >
+            <AtIcon value="eye" size="28"></AtIcon>
+            发现
+          </View>
+          <View
+            onClick={() => this.handleNav(1)}
+            className={`add-btn tab-btn`}
+          >
+            <AtIcon value="add"></AtIcon>
+          </View>
+          <View
+            onClick={() => this.handleNav(2)}
+            className={`tab-btn ${this.state.current === 2 ? 'active' : ''}`}
+          >
+            <AtIcon value="home" size="28"></AtIcon>
+            我的
+          </View>
+        </View>
         {
           this.state.current === 0
             ? <View className="page-content"><HallPage /></View>
-            : null
-        }{
-          this.state.current === 1
-            ? <View className="page-content">
-              <AuthComponent />
-              <PublishPage />
-            </View>
             : null
         }{
           this.state.current === 2
