@@ -27,6 +27,7 @@ class App extends Component {
       'pages/quest-detail/index',
       'pages/im/index',
       'pages/msg-center/index',
+      'pages/myTask/index',
       'pages/publish/index',
     ],
     window: {

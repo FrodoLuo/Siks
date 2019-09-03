@@ -1,10 +1,20 @@
 .container{
   padding: 10px 40px;
   .userInfo{
-    display: inline-flex;
-    .info{
-      margin-left: 50px;
-    }
+    display: flex;
+    margin-top: 75rpx;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  .img {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+  }
+  .nickname{
+    text-align: center;
+    margin-top: 25rpx;
   }
 
   .buttonList{
@@ -15,10 +25,17 @@
     padding: 0 100rpx;
     align-items: center;
     margin-bottom: 100rpx;
+    .button{
+      background: rgba(249,186,13)
+    }
   }
   .menu{
     .button{
-      margin-bottom: 30px
+      color: #363636;
+      font-size: 35rpx;
+      padding-bottom: 20rpx;
+      margin-bottom: 30rpx;
+      border-bottom: 1px solid #ccc;
     }
   }
 }

@@ -5,14 +5,14 @@ import { PersonlStore, MessageClass, MaskStatus, MessageRes } from '../../../../
 import { AtButton, AtForm, AtInput } from 'taro-ui';
 const phptoSrc = require('./photo.png');
 import './index.less';
+nativeCloud.init()
+const DB = nativeCloud.database()
 
 interface ChatRoomProps {
   personalStore: PersonlStore;
   sessionId: string;
 }
 
-
-// const session_id = '0377e702-60c0-415a-a538-96b09f938037'
 
 @inject('personalStore')
 @observer
@@ -45,6 +45,29 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
     this.timer = setInterval(() => {
       this.fetchMes()
     }, 1000)
+
+    // const { data } = await DB.collection('message').where({
+    //   '_id': '3c4c6d855d6e842810fe083530c388c4'
+    // }).get();
+    // console.log('data111', data);
+
+    // console.log('messageListener');
+
+    // let messageListener = DB.collection('chatcontent').where({
+    //   _id: this.session_id
+    //   //@ts-ignore
+    // }).watch({
+    //   onChange: (item) => {
+    //     console.log('item!!!!', item);
+    //   },
+    //   onError: () => {
+
+    //   }
+    // })
+
+
+
+
   }
 
   public async fetchDetail() {
@@ -125,7 +148,7 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
 
   public async launchMaskImgMode() {
     let sessionDetail = this.props.personalStore.sessionDetail
-    let { status, finder, findee } = sessionDetail
+    let { status, finder, findee, globalstatus} = sessionDetail
 
     if ([MaskStatus.init].includes(status)) {
       Taro.showModal({
@@ -159,6 +182,9 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
       sourceType: ['album', 'camera'],
       count: 1,
       success: async (res) => {
+        Taro.showToast({
+          title: '上传图片成功！'
+        })
         let url = res.tempFilePaths[0];
         console.log(url);
         const ret = await nativeCloud.uploadFile({
@@ -197,10 +223,33 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
   }
 
   public async endSession(choice) {
-    this.props.personalStore.endSession({
+    await this.props.personalStore.endSession({
       session_id: this.session_id,
       choice
     })
+
+    await this.props.personalStore.getSessionDetail({
+      session_id: this.session_id,
+    })
+    if (choice) {
+      Taro.showToast({
+        title: '相遇是缘',
+      })
+    } else {
+      Taro.showToast({
+        title: '您已拒绝了他',
+      })
+    }
+
+
+    // Taro.showToast({
+    //   title: '恭喜你，穿越人海找到他',
+    //   icon: ''
+    // })
+    // Taro.showToast({
+    //   title: '不要灰心，那个Ta即将出现，再找找吧',
+    // })
+
   }
 
   public render() {
@@ -212,37 +261,41 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
     let openId = userInfo && userInfo.openid;
     let sessionDetail = this.props.personalStore.sessionDetail
 
-    let { status, finder, findee } = sessionDetail
+    console.log('sessionDetail', sessionDetail);
+
+    let { status, finder, findee, globalstatus} = sessionDetail
     let isFinder = openId == (finder && finder.openid)
     let isFindee = openId == (findee && findee.openid)
 
 
     return <View className={`chatroom`}>
-      <View className={`header ${userInfo && userInfo.nickname ? '' : 'hidden'}`}>
-        <View className="left">Ta是你要找的人吗</View>
-        <View className="middle">
-          <Button onClick={() => this.endSession(true)}>
-            是
-          </Button>
+      {isFinder && (globalstatus != 'success' && globalstatus != 'fail') &&
+        <View className={`header ${userInfo && userInfo.nickname ? '' : 'hidden'}`}>
+          <View className="left">Ta是你要找的人吗</View>
+          <View className="middle">
+            <Button onClick={() => this.endSession(true)}>
+              是
+            </Button>
+          </View>
+          <View className="right">
+            <Button onClick={() => this.endSession(false)}>
+              不是
+            </Button>
+          </View>
         </View>
-        <View className="right">
-          <Button onClick={() => this.endSession(false)}>
-            不是
-          </Button>
-        </View>
-      </View>
+      }
       {status == MaskStatus.acceptMask && (<View className="maskList">
         <Image
           src={finder.url}
           className="mask"
           mode="aspectFit"
-          style={{ filter: `blur(${16 - chatTimes}px)` }}
+          style={{ filter: `blur(${6 - chatTimes}px)` }}
         ></Image>
         <Image
           src={findee.url}
           className="mask"
           mode="aspectFit"
-          style={{ filter: `blur(${16 - chatTimes}px)` }}
+          style={{ filter: `blur(${6 - chatTimes}px)` }}
         ></Image>
       </View>)}
       <ScrollView
@@ -250,12 +303,14 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
         scroll-y
         scroll-with-animation="{{scrollWithAnimation}}"
         scroll-top="{{scrollTop}}"
-        scroll-into-View="{{scrollToMessage}}"
+        scrollIntoView={this.props.personalStore.scrollToMessage}
+
       // bindscrolltoupper="onScrollToUpper"
       >
-        {this.props.personalStore.textMsgList.map(item => {
+        {this.props.personalStore.textMsgList.map((item, index) => {
           console.log(item);
-          return (<View className={`message ${openId == item.sender.openid ? 'message__self' : ''}`}>
+          console.log(`item-${index}`);
+          return (<View className={`message ${openId == item.sender.openid ? 'message__self' : ''}`} id={`item-${index}`}>
             <Image
               className="avatar"
               src={item.sender && item.sender.icon_url}
@@ -264,7 +319,7 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
             <View className="main">
               <View className="nickname">{item.sender.nickname}</View>
 
-              <View className="text-wrapper">
+              <View className="text-wrapper" >
                 {/* {item.writeStatus === 'pending' && <View>···</View>} */}
                 <View className="text-content">{item.content.data.text}</View>
               </View>

@@ -16,38 +16,23 @@ interface PublishPageProps {
 class PublishPage extends Taro.Component<PublishPageProps> {
   userInfo: Taro.getUserInfo.PromisedPropUserInfo;
   public static defaultProps: PublishPageProps;
+  type = this.$router.params.type
 
   public config: Config = {
-    navigationBarTitleText: '我的消息',
+    navigationBarTitleText: '我的任务',
   };
 
   public async componentDidMount() {
     // await this.props.personalStore.getUserInfo();
-    await this.props.personalStore.getMyMsg();
+    await this.props.personalStore.pullMyTask();
+    await this.props.personalStore.pullMyLink();
   }
 
   public render() {
-    let myMsg = this.props.personalStore.myMsg
-    console.log('myMsg', myMsg);
     let userInfo = this.props.personalStore.userInfo;
     // console.log(userInfo);
     return <View>
-      <ScrollView className="chatMessage">
-        {myMsg.map(_ => {
-          if (_.type == 'chatInvite') {
-            return (
-              <View onClick={() => {
-                this.enterChatRoom(_.session_id)
-              }} className="line">
-                <View className="circle"></View>
-                有人向您发起了聊天，快点击进入<Text className="link">聊天室</Text>吧~！
-              </View>
-            )
-          } else if (_.type == 'chatInvite') {
 
-          } return <View></View>
-        })}
-      </ScrollView>
     </View >;
   }
 

@@ -27,27 +27,51 @@ class PublishPage extends Taro.Component<PublishPageProps> {
     return <View>
       <View className="container">
         <View className="userInfo">
-          <AtAvatar image={userInfo.icon_url} size="large" circle={true} />
-          <View className="info">
-            <View>{userInfo.nickname}</View>
-            <View>{userInfo.school.name}</View>
-          </View>
+          <AtAvatar className="img" image={userInfo.icon_url} size="large" circle={true} />
+          <View className="nickname">{userInfo.nickname}</View>
         </View>
         <View className="buttonList">
-          <Button size="mini" type="primary" className="publish">我发布的</Button>
-          <Button size="mini" type="primary">我参与的</Button>
+          <Button size="mini" type="primary" className="button" onClick={
+            () => {
+              Taro.navigateTo({
+                url: `/pages/myTask/index?type=launch`,
+              });
+            }
+          }>我发布的</Button>
+          <Button size="mini" type="primary" className="button" onClick={
+            () => {
+              Taro.navigateTo({
+                url: `/pages/myTask/index?type=join`,
+              });
+            }
+          }>我参与的</Button>
         </View>
         <View className="menu">
-          <Button className="button">我的钱包</Button>
-          <Button  className="button" onClick={
+          <View className="button" onClick = {
+            () => Taro.showToast({
+              title: '未完待续..',
+              icon: 'none'
+            })
+          }>我的钱包</View>
+          <View className="button" onClick={
             () => {
               Taro.navigateTo({
                 url: `/pages/msg-center/index`,
               });
             }
-          }>消息中心</Button>
-          <Button className="button">帮助中心</Button>
-          <Button className="button">投诉</Button>
+          }>消息中心</View>
+          <View className="button" onClick = {
+            () => Taro.showToast({
+              title: '未完待续..',
+              icon: 'none'
+            })
+          }>帮助中心</View>
+          <View className="button" onClick = {
+            () => Taro.showToast({
+              title: '未完待续..',
+              icon: 'none'
+            })
+          }>投诉</View>
         </View>
       </View>
     </View>;
