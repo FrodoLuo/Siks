@@ -70,6 +70,8 @@ export class PersonlStore {
   @observable public launchMaskMsg: any = {}
   @observable public acceptMaskMsg: any = {}
   @observable public chatTimes: number = 0;
+  @observable public myMsg: any = []
+
   @action public async getUserInfo() {
     let res = await cloud({
       name: 'getuserinfo',
@@ -204,6 +206,13 @@ export class PersonlStore {
       name: 'confirmFindee',
       data
     });
+  }
+
+  @action public async getMyMsg() {
+    let res = await cloud({
+      name: 'message'
+    })
+    this.myMsg = res
   }
 
 }

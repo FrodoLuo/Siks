@@ -22,20 +22,40 @@ class PublishPage extends Taro.Component<PublishPageProps> {
   };
 
   public async componentDidMount() {
-    await this.props.personalStore.getUserInfo();
+    // await this.props.personalStore.getUserInfo();
+    await this.props.personalStore.getMyMsg();
   }
 
   public render() {
+    let myMsg = this.props.personalStore.myMsg
+    console.log('myMsg', myMsg);
     let userInfo = this.props.personalStore.userInfo;
     // console.log(userInfo);
     return <View>
-      <View className="box">
-        <View className="chatMessage">
+      <View className="chatMessage">
+        {myMsg.map(_ => {
+          console.log('_111', _);
+          if (_.type == 'chatInvite') {
+            console.log('match!!!');
 
-        </View>
+            return (
+              <View onClick={() => {
+                this.enterChatRoom(_.session_id)
+              }}>
+                进入聊天室
+              </View>
+            )
+          }
+          return <View></View>
+        })}
       </View>
     </View>;
   }
-}
 
+  enterChatRoom(sessionId) {
+    Taro.navigateTo({
+      url: `/pages/im/index?session_id=${sessionId}`,
+    });
+  }
+}
 export default PublishPage;
