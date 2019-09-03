@@ -75,9 +75,9 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
     questStore.resetShare();
 
     const path = `/pages/quest-detail/index?id=${this.$router.params.id}` +
-    `&link_id=${questStore.currentLinkId}` +
-    `&key=${questStore.currentQuest!.key}` +
-    `&found=${found ? '1' :'0'}`;
+      `&link_id=${questStore.currentLinkId}` +
+      `&key=${questStore.currentQuest!.key}` +
+      `&found=${found ? '1' : '0'}`;
 
     console.log(path);
     return {
@@ -168,12 +168,19 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
     const storeFound = this.props.questDetailStore.found;
     return (
       <View className="page-content">
+        <Button
+          onClick={() => {
+            Taro.navigateTo({
+              url: '/pages/index/index'
+            });
+          }}
+        >返回</Button>
         <AuthComponent />
         <AtModal
           isOpened={this.state.showShare}
         >
           <AtModalHeader>转发出去</AtModalHeader>
-          <AtModalContent>{storeFound ? '转发给TA, 完成任务领取赏金!' : '转发任务, 让你认识的人来找到TA' }</AtModalContent>
+          <AtModalContent>{storeFound ? '转发给TA, 完成任务领取赏金!' : '转发任务, 让你认识的人来找到TA'}</AtModalContent>
           <AtModalAction>
             <Button onClick={_ => this.closeShare()}>取消</Button>
             <Button type="primary" openType="share" onClick={this.closeShare}>转发</Button>
@@ -236,8 +243,7 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
                               <View>
                                 <AtAvatar
                                   size="small"
-                                  image={consumer.icon_url}
-                                  openData={{ type: 'userAvatarUrl' }}
+                                  image={consumer.iconUrl}
                                   circle={true}
                                 ></AtAvatar>
                               </View>
@@ -340,8 +346,19 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
               ? quest.position === 5
                 ? (
                   <View className="sik-btn-container">
-                    <AtButton className="sik-btn">我认识TA</AtButton>
-                    <AtButton className="sik-btn">放弃寻找</AtButton>
+                    <AtButton
+                      className="sik-btn"
+                      onClick={() => {
+                        store.share(true);
+                        this.openShare();
+                      }}
+                    >可能是TA!</AtButton>
+                    <AtButton
+                      className="sik-btn"
+                      onClick={() => {
+                        store.giveUp(quest._id);
+                      }}
+                    >放弃寻找</AtButton>
                   </View>
                 )
                 : quest.position === line.consumers.length - 1

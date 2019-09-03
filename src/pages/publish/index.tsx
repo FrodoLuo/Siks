@@ -1,8 +1,8 @@
-import { Button, Form, Image, Input, Label, Picker, PickerView, View } from '@tarojs/components';
+import { Button, Form, Image, Input, Label, Picker, Textarea, View } from '@tarojs/components';
 import { inject, observer } from '@tarojs/mobx';
 import Taro from '@tarojs/taro';
 import { AtButton, AtForm, AtImagePicker, AtInput, AtModal, AtSwitch, AtTextarea } from 'taro-ui';
-import { expires, PUBLISH_STAGE, PublishController } from '../../../../store/publish';
+import { expires, PUBLISH_STAGE, PublishController } from '../../store/publish';
 
 import { SchoolConfig } from 'src/store/school';
 import './index.less';
@@ -34,13 +34,23 @@ class PublishPage extends Taro.Component<PublishPageProps> {
     this.props.publishController.update('currentStage', t);
   }
 
-  public handleFiles = async files => {
-    const res = await this.props.publishController.uploadFiles(files);
+  public handleFiles = async (files, type: string) => {
+    switch (type) {
+      case 'add': {
+        const res = await this.props.publishController.uploadFiles(files);
+        break;
+      }
+      case 'remove': {
+        this.props.publishController.imageUrl = '';
+        this.props.publishController.files = [];
+      }
+    }
   }
 
   public render() {
     const { publishController } = this.props;
     const schools = this.props.schoolConfig.schools;
+    console.log(this.props.publishController);
     return (
       <View className="page-content">
         {
@@ -61,60 +71,55 @@ class PublishPage extends Taro.Component<PublishPageProps> {
             )
             : null
         }
-        {
-          publishController.currentStage !== PUBLISH_STAGE.CONTENT_AND_IMG
-            && publishController.currentStage !== PUBLISH_STAGE.FINISHED
-            ? (
-              <View>
-                <View className="title">
-                  {this.props.publishController.title}
-                </View>
-                <View className="content">
-                  {this.props.publishController.content}
-                </View>
-              </View>
-            )
-            : null
-        }
         { // Stage 1 - 填写标题与上传图片
           publishController.currentStage === PUBLISH_STAGE.CONTENT_AND_IMG
             ? (
               <View>
                 <View className="form-item">
-                  <AtInput
-                    title="标题"
+                  <Label className="label">
+                    取个标题, 吸引更多人的注意
+                  </Label>
+                  <Input
                     type="text"
                     name="title"
-                    onChange={value => publishController.update('title', value)}
+                    className="sik-input input"
+                    onInput={({ detail }) => publishController.update('title', detail.value)}
                     value={publishController.title}
-                    placeholder="输入寻人标题"
-                  ></AtInput>
+                  ></Input>
                 </View>
                 <View className="form-item">
-                  <AtTextarea
-                    onChange={value => publishController.update('content', value.detail.value)}
+                  <Label className="label">
+                    描述一下, 让大家帮你找到那个TA
+                  </Label>
+                  <Textarea
+                    className="sik-input"
+                    onInput={value => publishController.update('content', value.detail.value)}
                     value={publishController.content}
                     placeholder="输入寻人描述"
-                  ></AtTextarea>
+                  ></Textarea>
+                </View>
+                <View className="form-item">
+                  <Label className="label">
+                    添加一张照片
+                  </Label>
+                  <AtImagePicker
+                    customStyle={{
+                      pointerEvents: publishController.currentStage === PUBLISH_STAGE.CONTENT_AND_IMG ? 'all' : 'none',
+                    }}
+                    className="sik-image-picker"
+                    onChange={this.handleFiles}
+                    files={publishController.files || []}
+                    showAddBtn={
+                      publishController.files.length === 0
+                      && publishController.currentStage === PUBLISH_STAGE.CONTENT_AND_IMG
+                    }
+                    length={1}
+                  ></AtImagePicker>
                 </View>
               </View>
             )
             : null
         }
-        <View className="form-item">
-          <AtImagePicker
-            customStyle={{
-              pointerEvents: publishController.currentStage === PUBLISH_STAGE.CONTENT_AND_IMG ? 'all' : 'none',
-            }}
-            onChange={this.handleFiles}
-            files={publishController.files || []}
-            showAddBtn={
-              publishController.files.length === 0
-              && publishController.currentStage === PUBLISH_STAGE.CONTENT_AND_IMG
-            }
-            length={1}
-          ></AtImagePicker>
-        </View>
         {
           // Stage 2 - 填写位置, 赏金, 时限
           publishController.currentStage === PUBLISH_STAGE.DETAILING
@@ -122,6 +127,9 @@ class PublishPage extends Taro.Component<PublishPageProps> {
             ? (
               <View>
                 <View className="form-item">
+                  <Label className="label">
+                    你在哪看到TA的
+                  </Label>
                   <Picker
                     mode="selector"
                     onChange={e => publishController.school = e.detail.value}
@@ -129,55 +137,60 @@ class PublishPage extends Taro.Component<PublishPageProps> {
                     range={schools.map(item => item.name)}
                   >
                     <View className="picker">
-                      <AtInput
-                        title="学校"
-                        name="school"
-                        onChange={() => { }}
-                        value={schools[publishController.school]
-                          ? schools[publishController.school].name
-                          : ''
-                        }
-                      ></AtInput>
+                      {
+                        (schoolIndex => {
+                          const school = schools[schoolIndex];
+                          if (school) {
+                            return school.name;
+                          } else {
+                            return '';
+                          }
+                        })(publishController.school)
+                      }
                     </View>
                   </Picker>
                 </View>
                 <View className="form-item">
-                  <AtInput
-                    value={publishController.gold || ''}
-                    title="赏金"
+                  <Label className="label">
+                    填写一下赏金吧
+                  </Label>
+                  <Input
+                    className="sik-input"
                     name="gold"
-                    onChange={(v: any) => publishController.gold = Number.parseFloat(v)}
+                    onInput={({ detail }: any) => publishController.gold = Number.parseFloat(detail.value)}
                     type="number"
-                  ></AtInput>
+                  ></Input>
                 </View>
                 <View className="form-item">
+                  <Label className="label">
+                    信息有效期是多久
+                  </Label>
                   <Picker
                     mode="selector"
                     value={publishController.expire || -1}
                     onChange={v => publishController.expire = v.detail.value}
                     range={expires}
                   >
-                    <View>
-                      <AtInput
-                        value={expires[publishController.expire || -1]}
-                        title="有效期"
-                        name="expire"
-                        onChange={() => { }}
-                        type="number"
-                      ></AtInput>
+                    <View className="picker">
+                      {expires[publishController.expire || -1]}
                     </View>
                   </Picker>
                 </View>
-                <View className="form-item">
-                  <AtSwitch
-                    title="实名"
-                    checked={publishController.currentStage === PUBLISH_STAGE.IDENTIFICATION}
-                    onChange={value => {
-                      publishController.currentStage = value ? PUBLISH_STAGE.IDENTIFICATION : PUBLISH_STAGE.DETAILING;
-                    }
-                    }
-                  />
-                </View>
+                {
+                  false
+                    ? (<View className="form-item">
+
+                      <AtSwitch
+                        title="实名"
+                        checked={publishController.currentStage === PUBLISH_STAGE.IDENTIFICATION}
+                        onChange={value => {
+                          publishController.currentStage = value ? PUBLISH_STAGE.IDENTIFICATION : PUBLISH_STAGE.DETAILING;
+                        }
+                        }
+                      />
+                    </View>)
+                    : null
+                }
 
               </View>
             )
@@ -216,12 +229,12 @@ class PublishPage extends Taro.Component<PublishPageProps> {
             )
             : null
         }
-        <View className="btn-wrap">
+        <View className="btn-container">
           {
             publishController.currentStage === PUBLISH_STAGE.DETAILING
               || publishController.currentStage === PUBLISH_STAGE.IDENTIFICATION
               ? (
-                <View className="form-item">
+                <View className="btn-wrap">
                   <AtButton type="primary" className="sik-btn"
                     onClick={
                       () => {
@@ -240,7 +253,7 @@ class PublishPage extends Taro.Component<PublishPageProps> {
           {
             publishController.currentStage === PUBLISH_STAGE.CONTENT_AND_IMG
               ? (
-                <View className="form-item">
+                <View className="btn-wrap">
                   <AtButton type="primary" className="sik-btn"
                     onClick={
                       () => {
@@ -262,7 +275,7 @@ class PublishPage extends Taro.Component<PublishPageProps> {
               || this.props.publishController.currentStage === PUBLISH_STAGE.IDENTIFICATION
             )
               ? (
-                <View className="form-item">
+                <View className="btn-wrap">
                   <AtButton type="primary" className="sik-btn"
                     disabled={!this.props.publishController.valid()}
                     onClick={this.submit}

@@ -17,11 +17,10 @@ export default ({ quest }: { quest: Quest }) => {
       }}
     >
       <View className="publisher-info">
-        <AtAvatar circle={true} />
+        <AtAvatar circle={true} image={quest.user.icon_url} />
         <View className="publisher-nick">
           <Text className="publisher-name">
-            {/* {quest.user.nickname} */}
-            Blaj kop
+            {quest.user.nickname}
           </Text>
           <Text className="publisher-time">
             {new Date(quest.published_time || '').toLocaleTimeString()}
