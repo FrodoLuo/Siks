@@ -83,10 +83,10 @@ export class PersonlStore {
     this.launchMaskMsg= {}
     this.acceptMaskMsg= {}
     this.chatTimes = 0;
-    this.myMsg= []
-    this.scrollToMessage ='item-0'
-    this.myTaskList = []
-    this.myLink = []
+    // this.myMsg= []
+    // this.scrollToMessage ='item-0'
+    // this.myTaskList = []
+    // this.myLink = []
   }
 
   @action public async getUserInfo() {
@@ -143,19 +143,20 @@ export class PersonlStore {
     this.setLocalMessages(session_id, newMsgList);
 
     let newTextMsgList = newMsgList.filter(_ => (_.content.type == MessageClass.text));
-    this.chatTimes = this.countTimes(newTextMsgList);
+    // this.chatTimes = this.countTimes(newTextMsgList);
 
     if (this.textMsgList.length != newTextMsgList.length) { // 有新的文本消息
       this.textMsgList = newTextMsgList;
       this.scrollToMessage = `item-${newTextMsgList.length - 1}`
       console.log('scrollToMessage', this.scrollToMessage);
-
+      this.chatTimes += (newTextMsgList.length - this.textMsgList.length )
     }
 
     let launchMaskMsgList = res.filter(_ => (_.content.type == MessageClass.launchMask))
     // console.log('launchMaskMsgList', launchMaskMsgList);
     if (launchMaskMsgList.length > 0) {
       this.launchMaskMsg = launchMaskMsgList.shift();
+      this.chatTimes = 0;
     } else {
       this.launchMaskMsg = []
     }
@@ -164,6 +165,7 @@ export class PersonlStore {
     // console.log('launchMaskMsgList', launchMaskMsgList);
     if (AcceptMaskMsgList.length > 0) {
       this.acceptMaskMsg = AcceptMaskMsgList.shift();
+      this.chatTimes = 0;
     } else {
       this.acceptMaskMsg = []
     }

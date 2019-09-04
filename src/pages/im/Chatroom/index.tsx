@@ -293,13 +293,13 @@ class ChatRoom extends Taro.Component<ChatRoomProps> {
           src={finder.url}
           className="mask"
           mode="aspectFit"
-          style={{ filter: `blur(${6 - chatTimes}px)` }}
+          style={{ filter: `blur(${10 - chatTimes}px)` }}
         ></Image>
         <Image
           src={findee.url}
           className="mask"
           mode="aspectFit"
-          style={{ filter: `blur(${6 - chatTimes}px)` }}
+          style={{ filter: `blur(${10 - chatTimes}px)` }}
         ></Image>
       </View>)}
       <ScrollView
