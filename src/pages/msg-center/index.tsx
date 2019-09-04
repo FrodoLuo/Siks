@@ -4,6 +4,7 @@ import Taro, { Config } from '@tarojs/taro';
 import { PersonlStore } from 'src/store/personlStore';
 import { AtAvatar } from 'taro-ui'
 import './index.less';
+import AuthComponent from '../../components/auth';
 
 interface PublishPageProps {
   msgCenter: PersonlStore;
@@ -35,6 +36,7 @@ class PublishPage extends Taro.Component<PublishPageProps> {
     // console.log(userInfo);
     return <View>
       <ScrollView className="chatMessage">
+        <AuthComponent></AuthComponent>
         {myMsg.map(_ => {
           if (_.type == 'chatInvite') {
             return (

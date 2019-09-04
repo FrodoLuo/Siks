@@ -143,20 +143,22 @@ export class PersonlStore {
     this.setLocalMessages(session_id, newMsgList);
 
     let newTextMsgList = newMsgList.filter(_ => (_.content.type == MessageClass.text));
-    // this.chatTimes = this.countTimes(newTextMsgList);
+    this.chatTimes = this.countTimes(newTextMsgList);
 
     if (this.textMsgList.length != newTextMsgList.length) { // 有新的文本消息
+      // this.chatTimes += (newTextMsgList.length - this.textMsgList.length )
       this.textMsgList = newTextMsgList;
       this.scrollToMessage = `item-${newTextMsgList.length - 1}`
       console.log('scrollToMessage', this.scrollToMessage);
-      this.chatTimes += (newTextMsgList.length - this.textMsgList.length )
     }
 
     let launchMaskMsgList = res.filter(_ => (_.content.type == MessageClass.launchMask))
     // console.log('launchMaskMsgList', launchMaskMsgList);
     if (launchMaskMsgList.length > 0) {
       this.launchMaskMsg = launchMaskMsgList.shift();
-      this.chatTimes = 0;
+      //@ts-ignore
+      this.textMsgList.forEach(_ => _.invalid = true)
+      // this.chatTimes = 0;
     } else {
       this.launchMaskMsg = []
     }
@@ -165,7 +167,9 @@ export class PersonlStore {
     // console.log('launchMaskMsgList', launchMaskMsgList);
     if (AcceptMaskMsgList.length > 0) {
       this.acceptMaskMsg = AcceptMaskMsgList.shift();
-      this.chatTimes = 0;
+      //@ts-ignore
+      this.textMsgList.forEach(_ => _.invalid = true)
+      // this.chatTimes = 0;
     } else {
       this.acceptMaskMsg = []
     }
@@ -175,6 +179,8 @@ export class PersonlStore {
     let count = 0;
     let openid = ''
     newTextMsgList.forEach(msg => {
+      //@ts-ignore
+      if(msg.invalid) return;
       if (msg.sender.openid !== openid) {
         openid = msg.sender.openid
         count++

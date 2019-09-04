@@ -6,6 +6,8 @@ import { AtButton, AtForm, AtInput } from 'taro-ui';
 import Chatroom from './Chatroom'
 import './index.less'
 
+import AuthComponent from '../../components/auth';
+
 interface IMProps {
   personalStore: PersonlStore;
 }
@@ -24,6 +26,7 @@ class IM extends Taro.Component<IMProps> {
 
   public render() {
     return <View className="container">
+      <AuthComponent></AuthComponent>
       <Chatroom sessionId={this.$router.params.session_id}></Chatroom>
     </View>;
   }

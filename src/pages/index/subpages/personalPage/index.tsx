@@ -28,6 +28,7 @@ class PublishPage extends Taro.Component<PublishPageProps> {
     // console.log(userInfo);
     return <View>
       <View className="container">
+        <AuthComponent></AuthComponent>
         <View className="userInfo">
           <AtAvatar className="img" image={userInfo.icon_url} size="large" circle={true} />
           <View className="nickname">{userInfo.nickname}</View>
@@ -41,11 +42,10 @@ class PublishPage extends Taro.Component<PublishPageProps> {
             }
           }>我发布的</Button>
           <Button size="mini" type="primary" className="button" onClick={
-            () => {
-              Taro.navigateTo({
-                url: `/pages/myTask/index?type=join`,
-              });
-            }
+            () => Taro.showToast({
+              title: '未完待续..',
+              icon: 'none'
+            })
           }>我参与的</Button>
         </View>
         <View className="menu">

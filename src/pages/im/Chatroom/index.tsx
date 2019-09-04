@@ -8,6 +8,7 @@ import './index.less';
 nativeCloud.init()
 const DB = nativeCloud.database()
 
+
 interface ChatRoomProps {
   personalStore: PersonlStore;
   sessionId: string;
