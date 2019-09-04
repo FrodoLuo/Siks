@@ -1,6 +1,6 @@
 import { Button, Form, Image, Input, Label, Picker, Textarea, View } from '@tarojs/components';
 import { inject, observer } from '@tarojs/mobx';
-import Taro from '@tarojs/taro';
+import Taro, { Config } from '@tarojs/taro';
 import { AtButton, AtForm, AtImagePicker, AtInput, AtModal, AtSwitch, AtTextarea } from 'taro-ui';
 import { expires, PUBLISH_STAGE, PublishController } from '../../store/publish';
 
@@ -21,6 +21,10 @@ interface PublishPageProps {
 class PublishPage extends Taro.Component<PublishPageProps> {
 
   public static defaultProps: PublishPageProps;
+
+  public config: Config = {
+    navigationBarTitleText: '接着找',
+  };
 
   public submit = event => {
     console.log('publish');

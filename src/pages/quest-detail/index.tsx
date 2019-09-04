@@ -50,6 +50,10 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
 
   public static defaultProps: QuestDetailPageProps;
 
+  public config = {
+    navigationBarTitleText: '任务详情',
+  };
+
   public state = {
     showShare: false,
   };
@@ -82,7 +86,7 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
     console.log(path);
     return {
       path,
-      title: this.props.questDetailStore.currentQuest!.title,
+      title: `接着找:${this.props.questDetailStore.currentQuest!.title}`,
     };
   }
 
@@ -281,7 +285,6 @@ class QuestDetailPage extends Component<QuestDetailPageProps> {
                               circle={true}
                             />
                           </View>
-                          <View className="name">{quest.user.nickname}</View>
                         </View>
                       </View>
                       {

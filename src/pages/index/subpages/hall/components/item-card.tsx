@@ -44,13 +44,11 @@ export default ({ quest }: { quest: Quest }) => {
         </View>) : null}
       </View>
       <View className="footer">
-        <AtIcon value="map-pin"></AtIcon>
         {
           (schoolIndex => {
             const school = schoolStore.schools.find(s => s._id === schoolIndex);
-            console.log({ ...school });
             const s = { ...school } as any;
-            const name = s.name || '';
+            const name = s.school || s.name;
             return name;
           })(quest.school)
         }

@@ -35,7 +35,7 @@ class Index extends Component {
    * 提示和声明 navigationBarTextStyle: 'black' | 'white' 类型冲突, 需要显示声明类型
    */
   public config: Config = {
-    navigationBarTitleText: '寻人中心',
+    navigationBarTitleText: '接着找',
     enablePullDownRefresh: true,
   };
 

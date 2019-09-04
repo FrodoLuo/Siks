@@ -1,3 +1,4 @@
+import Taro from '@tarojs/taro';
 import { action, observable } from 'mobx';
 import { cloud } from '../utils/request';
 import { UserInfo } from './auth';
@@ -33,8 +34,9 @@ export class QuestStore {
       res => {
         this.quests = res;
         this.listStatus = res.length < 10 ? 'noMore' : 'more';
+        Taro.stopPullDownRefresh();
       },
-    );
+    )
   }
 
   @action public refreshList() {
