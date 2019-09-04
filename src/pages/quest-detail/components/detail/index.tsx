@@ -25,9 +25,8 @@ const QuestDetailContent = ({ title, content, cover, school }: QDCProps) => {
         : null
       }
       <View className="school">
-        <AtIcon value="map-pin"></AtIcon>
         <Text className="school-name">
-          {(schoolStore.schools.find(item => item._id === school) || { name: '' }).name}
+          {(schoolStore.schools.find(item => item._id === school) || { name: '', school: '' }).school}
         </Text>
       </View>
     </View>

@@ -36,7 +36,7 @@ class AuthComponent extends Component<AuthComponentProps> {
         closeOnClickOverlay={false}
       >
         <AtModalHeader>授权登录</AtModalHeader>
-        <AtModalContent>授权六度参与找人</AtModalContent>
+        <AtModalContent>授权小程序「接着找」获取信息</AtModalContent>
         <AtModalAction>
           <Button
             onClick={() => {

@@ -52,7 +52,7 @@ class HallPage extends Taro.Component<PageStateProps> {
     const schoolNames = schools.map(item => {
       const i = { ...item };
       console.log(i);
-      return i.school;
+      return i.school || i.name;
     });
     console.log(schoolNames);
     return (
